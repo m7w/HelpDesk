@@ -1,0 +1,49 @@
+server:
+  servlet:
+    context-path: /helpdesk
+
+logging:
+  file:
+    name: app.log
+  logback:
+    rollingpolicy:
+      clean-history-on-start: true
+
+spring:
+  application:
+    name: Help Desk
+  sql:
+    init:
+      mode: always
+  datasource:
+    url: jdbc:h2:mem:tickets
+    name: orders
+    username: sa
+    password:
+  h2:
+    console:
+      enabled: true
+      path: /h2
+  jpa:
+    open-in-view: false
+    defer-datasource-initialization: true
+    show-sql: true
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        format_sql: true
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: mk.test.only@gmail.com
+    password: LkzNtcnjdNjkmrj
+    protocol: smtp
+    properties:
+      debug: true
+      smtp:
+        auth: true
+        starttls.enable: true
+
+jwt:
+  secret: TylerDurden
