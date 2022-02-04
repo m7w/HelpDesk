@@ -6,7 +6,7 @@ import { Link, Switch, Route } from "react-router-dom";
 import { useHistory, withRouter } from "react-router";
 import TicketInfoWithRouter from "./TicketInfo";
 import { ALL_TICKETS, MY_TICKETS } from "../constants/mockTickets";
-import apiService from "../services/apiService.js";
+import ticketService from "../services/ticketService.js";
 
 function a11yProps(index) {
   return {
@@ -24,7 +24,7 @@ function MainPage(props) {
 
   useEffect(()=> {
     // put requests for tickets here
-    apiService.get("/tickets/employee");
+    ticketService.getTickets();
   }, []); 
 
   const handleCreate = () => {

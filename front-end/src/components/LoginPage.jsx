@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Grid, Button, IconButton, TextField, Typography } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
-//import apiService from "../services/apiService.js";
 import authService from "../services/authService.js";
 
 function Alert(props) {
@@ -38,13 +37,8 @@ function LoginPage(props) {
 
   const handleClickAuth = () => {
     // put authorization logic here
-    authService({
-      url: "/auth/login", 
-      data: {
-        email: nameValue,
-        password: passwordValue
-      }
-    })
+  
+    authService.login(nameValue, passwordValue)
       .then((response) => {
         if (response.status === 200) {
           const token = response.headers.authorization;
@@ -54,15 +48,18 @@ function LoginPage(props) {
       })
       .catch((error) => {
 
-        if (error.response.status === 400) {
-          setNameError(error.response.data.email);
-          setPasswordError(error.response.data.password);
-        }
-
-        if (error.response.status === 401) {
-          setNameError("");
-          setPasswordError("");
-          setAuthError("Please make sure you are using a valid email or password");
+        switch (error.response.status) {
+          case 400:
+            setNameError(error.response.data.email);
+            setPasswordError(error.response.data.password);
+            break;
+          case 401:
+            setNameError("");
+            setPasswordError(""); 
+            setAuthError("Please make sure you are using a valid email or password");
+            break;
+          default:
+            break;
         }
       });
   }

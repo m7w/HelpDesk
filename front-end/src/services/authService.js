@@ -1,8 +1,12 @@
-import axios from "axios"
+import apiService from "./apiService.js";
 
-const authService = axios.create({
-    method: "post",
-    baseURL: "http://localhost:8080/helpdesk/api", 
-});
+const authService = {
+    login : (email, password) => {
+        return apiService.post("/api/auth/login", {
+            email: email,
+            password: password,
+        });
+    }
+}
 
 export default authService;

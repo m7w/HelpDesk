@@ -10,9 +10,12 @@ import {
   Route,
   Switch,
 } from "react-router-dom";
+import { apiConfigure } from "./services/apiService.js";
 
 function App() {
   const [isAuthorized, setAuth] = useState(false);
+
+  apiConfigure("http://localhost:8080/helpdesk");
 
   return (
     <Router>

@@ -1,8 +1,10 @@
 import axios from "axios"
 
-const apiService = axios.create({
-    baseURL: "http://localhost:8080/helpdesk/api",
-});
+const apiService = axios.create();
+
+const apiConfigure = (contextPath) => {
+    apiService.defaults.baseURL = contextPath;
+}
 
 apiService.interceptors.request.use((config) => {
     const token = localStorage.getItem("token");
@@ -20,4 +22,5 @@ apiService.interceptors.response.use((response) => {
     return Promise.reject(error);
 });
 
+export { apiConfigure };
 export default apiService;
