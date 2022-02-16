@@ -21,11 +21,17 @@ function MainPage(props) {
   const [myTickets, setMyTickets] = useState(MY_TICKETS);
   const [allTickets, setAllTickets] = useState(ALL_TICKETS);
   const [filteredTickets, setFilteredTickets] = useState([]);
+  const [orderBy, setOrderBy] = useState("urgency");
+  const [order, setOrder] = useState("asc");
 
   useEffect(()=> {
     // put requests for tickets here
-    ticketService.getTickets();
-  }, []); 
+    ticketService.getTickets(0, 5, orderBy, order)
+      .then((response) => {
+        setAllTickets(response.data);
+        setMyTickets(response.data);
+      });
+  }, [orderBy, order]); 
 
   const handleCreate = () => {
   };
@@ -42,6 +48,15 @@ function MainPage(props) {
   const handleTabChange = (event, value) => {
       setTabValue(value);
       setFilteredTickets([]);
+  };
+
+  const handleSort = (newOrderBy) => {
+    if (newOrderBy === orderBy) {
+      setOrder(order === "asc" ? "desc" : "asc");
+    } else {
+      setOrderBy(newOrderBy);
+      setOrder("asc");
+    }
   };
 
   const handleSearchTicket = (event) => {
@@ -108,6 +123,9 @@ function MainPage(props) {
                   tickets={
                     filteredTickets.length ? filteredTickets : myTickets
                   }
+                  sortCallback={handleSort}
+                  orderBy={orderBy}
+                  order={order}
                 />
               </TabPanel>
               <TabPanel value={tabValue} index={1}>
@@ -116,6 +134,9 @@ function MainPage(props) {
                   tickets={
                     filteredTickets.length ? filteredTickets : allTickets
                   }
+                  sortCallback={handleSort}
+                  orderBy={orderBy}
+                  order={order}
                 />
               </TabPanel>
             </AppBar>

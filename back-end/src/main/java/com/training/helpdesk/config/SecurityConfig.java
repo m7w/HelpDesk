@@ -75,8 +75,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .addFilterBefore(jwtRequestFilter(), BasicAuthenticationFilter.class)
             .authorizeRequests()
             .antMatchers("/api/auth/login").permitAll()
+            .antMatchers("/h2/**").permitAll()
             .antMatchers("/**").authenticated()
             .and()
-            .httpBasic();
+            .httpBasic()
+            .and().headers().frameOptions().disable();
     }
 }

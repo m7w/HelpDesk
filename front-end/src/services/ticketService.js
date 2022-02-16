@@ -1,9 +1,11 @@
 import apiService from "./apiService";
 
+const getTickets = (page, size, orderBy, order) => {
+    return apiService.get(`/api/tickets?page=${page}&size=${size}&sort=${orderBy}.${order}`);
+};
+
 const ticketService = {
-    getTickets : () => {
-        return apiService.get("/api/tickets/employee");
-    }
+    getTickets,
 }
 
 export default ticketService;

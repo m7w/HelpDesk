@@ -12,6 +12,8 @@ import {
   TablePagination,
   TableRow,
   TextField,
+  Tooltip,
+  TableSortLabel,
 } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import { withRouter } from "react-router";
@@ -27,14 +29,20 @@ class TicketsTable extends React.Component {
     };
   }
 
-  handleChangePage = () => {
-    console.log("change page");
+  handleChangePage = (event) => {
+    this.setState({
+      page: +event.target.value,
+    });
+    console.log("change page: " + this.state.page);
+    console.log(event.target);
   };
 
   handleChangeRowsPerPage = (event) => {
     this.setState({
       rowsPerPage: +event.target.value,
     });
+    console.log("change rowsPerPage: " + this.state.rowsPerPage);
+    console.log(event.target);
   };
 
   handleCancelSubmit = () => {
@@ -46,7 +54,7 @@ class TicketsTable extends React.Component {
   };
 
   render() {
-    const { searchCallback, tickets } = this.props;
+    const { searchCallback, tickets, sortCallback , orderBy, order } = this.props;
     const { page, rowsPerPage } = this.state;
     const { url } = this.props.match;
     const {
@@ -74,8 +82,23 @@ class TicketsTable extends React.Component {
             <TableHead>
               <TableRow>
                 {TICKETS_TABLE_COLUMNS.map((column) => (
-                  <TableCell align={column.align} key={column.id}>
-                    <b>{column.label}</b>
+                  <TableCell
+                    align={column.align} 
+                    key={column.id}
+                    sortDirection={orderBy === column.id ? order : false}
+                  >
+                    <Tooltip
+                      title="Sort"
+                      enterDelay={300}
+                    >
+                      <TableSortLabel
+                        active={orderBy === column.id}
+                        direction={order}
+                        onClick={() => sortCallback(column.id)}
+                      >
+                        <b>{column.label}</b>
+                      </TableSortLabel>
+                    </Tooltip>
                   </TableCell>
                 ))}
               </TableRow>
@@ -145,6 +168,9 @@ class TicketsTable extends React.Component {
 TicketsTable.propTypes = {
   searchCallback: PropTypes.func,
   tickets: PropTypes.array,
+  sortCallback: PropTypes.func,
+  orderBy: PropTypes.string,
+  order: PropTypes.string,
 };
 
 const TicketsTableWithRouter = withRouter(TicketsTable);

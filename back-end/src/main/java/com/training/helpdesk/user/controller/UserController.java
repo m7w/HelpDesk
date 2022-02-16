@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.AllArgsConstructor;
 
 @RestController
-@RequestMapping("/api/users")
 @AllArgsConstructor
+@RequestMapping("/api/users")
 public class UserController {
 
     private final UserService userService;

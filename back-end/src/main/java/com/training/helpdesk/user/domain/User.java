@@ -34,7 +34,7 @@ public class User implements Serializable {
     private String lastName;
 
     @Column(name = "role_id")
-    private Role roleId;
+    private Role role;
 
     @Column(name = "email")
     private String email;
@@ -51,7 +51,7 @@ public class User implements Serializable {
         result = prime * result + ((id == null) ? 0 : id.hashCode());
         result = prime * result + ((lastName == null) ? 0 : lastName.hashCode());
         result = prime * result + ((password == null) ? 0 : password.hashCode());
-        result = prime * result + ((roleId == null) ? 0 : roleId.hashCode());
+        result = prime * result + ((role == null) ? 0 : role.hashCode());
         return result;
     }
 
@@ -89,15 +89,18 @@ public class User implements Serializable {
                 return false;
         } else if (!password.equals(other.password))
             return false;
-        if (roleId != other.roleId)
+        if (role != other.role)
             return false;
         return true;
     }
 
     @Override
     public String toString() {
-        return "User [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName
-                + ", roleId=" + roleId + ", email=" + email +"]";
+        return "User [id=" + id
+            + ", firstName=" + firstName
+            + ", lastName=" + lastName
+            + ", roleId=" + role 
+            + ", email=" + email +"]";
     }
 
 }

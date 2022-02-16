@@ -7,6 +7,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.training.helpdesk.user.domain.User;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -38,8 +40,12 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             try{ 
                 jwtUtils.validateToken(token);
                 String username = jwtUtils.getUsername(token);
+                Long id = jwtUtils.getId(token);
+                User user = new User();
+                user.setEmail(username);
+                user.setId(id);
                 String authorities = jwtUtils.getAuthorities(token);
-                Authentication auth = new UsernamePasswordAuthenticationToken(username, null,
+                Authentication auth = new UsernamePasswordAuthenticationToken(new SecurityUser(user), null,
                         AuthorityUtils.commaSeparatedStringToAuthorityList(authorities));
                 SecurityContextHolder.getContext().setAuthentication(auth);
             } catch (Exception e) {
