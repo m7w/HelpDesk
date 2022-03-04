@@ -5,6 +5,8 @@ import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -51,6 +53,7 @@ public class Ticket {
     @ManyToOne(fetch = FetchType.EAGER)
     private User owner;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "state_id")
     private State state;
 

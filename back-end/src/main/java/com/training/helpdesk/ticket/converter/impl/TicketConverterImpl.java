@@ -16,8 +16,8 @@ public class TicketConverterImpl implements TicketConverter {
         dto.setName(ticket.getName());
         dto.setDate(ticket.getCreatedOn());
         dto.setResolutionDate(ticket.getDesiredResolutionDate());
-        dto.setUrgency(ticket.getUrgency());
-        dto.setStatus(ticket.getState());
+        dto.setUrgency(ticket.getUrgency().toString());
+        dto.setStatus(ticket.getState().toString());
         dto.setCategory(ticket.getCategory().getName());
         dto.setTicketOwner(ticket.getOwner().getFirstName() + " " + ticket.getOwner().getLastName());
         dto.setComment("Comments should be implemented");

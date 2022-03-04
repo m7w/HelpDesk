@@ -12,10 +12,10 @@ export const HISTORY_TABLE_COLUMNS = [
 ];
 
 export const TICKETS_TABLE_COLUMNS = [
-  { id: "id", label: "ID", align: "left" },
-  { id: "name", label: "Name", align: "left" },
-  { id: "resolutionDate", label: "Desired Date" },
-  { id: "urgency", label: "Urgency", align: "left" },
-  { id: "status", label: "Status", align: "left" },
-  { id: "action", label: "Action", align: "center" },
+  { id: "id", db_name: "t.id", label: "ID", align: "left" },
+  { id: "name", db_name: "t.name", label: "Name", align: "left" },
+  { id: "resolutionDate", db_name: "t.desiredResolutionDate", label: "Desired Date" },
+  { id: "urgency", db_name: "t.urgency", label: "Urgency", align: "left" },
+  { id: "status", db_name: "t.state", label: "Status", align: "left" },
+  { id: "action", db_name: "t.action", label: "Action", align: "center" },
 ];

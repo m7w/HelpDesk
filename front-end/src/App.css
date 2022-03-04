@@ -32,6 +32,7 @@
 
 .form__input-error {
     margin: -15px 20px 0px 0px;
+    padding-left: 5px;
     font-size: 0.8em;
     color: red;
 }
@@ -51,6 +52,12 @@
 .label__input-wrapper {
     font-size: 1.2em;
     margin-right: 40px;
+}
+
+.search-bar {
+    display: flex;
+    align-items: baseline;
+    justify-content: flex-start;
 }
 
 .container__button-wrapper {

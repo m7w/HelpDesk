@@ -18,6 +18,7 @@ import {
 import { Link } from "react-router-dom";
 import { withRouter } from "react-router";
 import { TICKETS_TABLE_COLUMNS } from "../constants/tablesColumns";
+import DropDown from "./DropDown";
 
 class TicketsTable extends React.Component {
   constructor(props) {
@@ -26,23 +27,31 @@ class TicketsTable extends React.Component {
     this.state = {
       page: 0,
       rowsPerPage: 5,
+      searchColumn: "t.name",
+      searchPattern: "",
     };
   }
 
-  handleChangePage = (event) => {
-    this.setState({
-      page: +event.target.value,
-    });
-    console.log("change page: " + this.state.page);
-    console.log(event.target);
+  handleChangePage = (event, page) => {
+    this.setState({ page: page });
+    this.props.paginationCallback(page, this.state.rowsPerPage);
+    console.log("handleChangePage");
   };
 
   handleChangeRowsPerPage = (event) => {
-    this.setState({
-      rowsPerPage: +event.target.value,
-    });
-    console.log("change rowsPerPage: " + this.state.rowsPerPage);
-    console.log(event.target);
+    this.setState({ page: 0, rowsPerPage: event.target.value });
+    this.props.paginationCallback(0, event.target.value);
+    console.log("handleChangeRowsPerPage");
+  };
+
+  handleSelectFilter= (column) => {
+    this.setState({ searchColumn: column });
+    this.props.searchCallback(column, this.state.searchPattern);
+  };
+
+  handleSelectFilterPattern = event => {
+    this.setState({ searchPattern: event.target.value });
+    this.props.searchCallback(this.state.searchColumn, event.target.value);
   };
 
   handleCancelSubmit = () => {
@@ -54,30 +63,51 @@ class TicketsTable extends React.Component {
   };
 
   render() {
-    const { searchCallback, tickets, sortCallback , orderBy, order } = this.props;
-    const { page, rowsPerPage } = this.state;
-    const { url } = this.props.match;
     const {
       handleChangePage,
       handleChangeRowsPerPage,
       handleCancelSubmit,
       handleSubmitTicket,
+      handleSelectFilter,
+      handleSelectFilterPattern,
     } = this;
 
+    const { 
+      searchErrorMessage, 
+      tickets, 
+      sortCallback , 
+      orderBy, 
+      order, 
+      ticketsCount 
+    } = this.props;
+
+    const { page, rowsPerPage } = this.state;
+    const { url } = this.props.match;
     return (
       <Paper>
         <TableContainer>
-          <TextField
-            onChange={searchCallback}
-            id="filled-full-width"
-            label="Search"
-            style={{ margin: 5, width: "500px" }}
-            placeholder="Search for ticket"
-            margin="normal"
-            InputLabelProps={{
-              shrink: true,
-            }}
-          />
+          <div className="search-bar">
+            <DropDown 
+              options={TICKETS_TABLE_COLUMNS.slice(0, 5)}
+              onSelect={handleSelectFilter}
+            />
+            <div>
+            <TextField
+              error={searchErrorMessage}
+              id="filled-full-width"
+              style={{ margin: 5, width: "500px" }}
+              placeholder="Search for ticket"
+              margin="normal"
+              onChange={handleSelectFilterPattern}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+              <div>
+                {searchErrorMessage && (<span className="form__input-error"> {searchErrorMessage} </span>)}
+              </div>
+            </div>
+          </div>
           <Table>
             <TableHead>
               <TableRow>
@@ -92,9 +122,9 @@ class TicketsTable extends React.Component {
                       enterDelay={300}
                     >
                       <TableSortLabel
-                        active={orderBy === column.id}
+                        active={orderBy === column.db_name}
                         direction={order}
-                        onClick={() => sortCallback(column.id)}
+                        onClick={() => sortCallback(column.db_name)}
                       >
                         <b>{column.label}</b>
                       </TableSortLabel>
@@ -105,8 +135,7 @@ class TicketsTable extends React.Component {
             </TableHead>
             <TableBody>
               {tickets
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row, index) => {
+                  .map((row, index) => {
                   return (
                     <TableRow hover role="checkbox" key={index}>
                       {TICKETS_TABLE_COLUMNS.map((column) => {
@@ -115,6 +144,13 @@ class TicketsTable extends React.Component {
                           return (
                             <TableCell key={column.id}>
                               <Link to={`${url}/${row.id}`}>{value}</Link>
+                            </TableCell>
+                          );
+                        }
+                        if (column.id === "resolutionDate") {
+                          return (
+                            <TableCell key={column.id}>
+                              {`${value.slice(8)}/${value.slice(5, 7)}/${value.slice(0, 4)}`}
                             </TableCell>
                           );
                         }
@@ -152,9 +188,9 @@ class TicketsTable extends React.Component {
           </Table>
         </TableContainer>
         <TablePagination
-          rowsPerPageOptions={[5, 10, 25, 100]}
+          rowsPerPageOptions={[3, 5, 10, 25, 100]}
           component="div"
-          count={tickets.length}
+          count={ticketsCount}
           rowsPerPage={rowsPerPage}
           page={page}
           onChangePage={handleChangePage}
@@ -171,6 +207,8 @@ TicketsTable.propTypes = {
   sortCallback: PropTypes.func,
   orderBy: PropTypes.string,
   order: PropTypes.string,
+  paginationCallback: PropTypes.func,
+  ticketsCount: PropTypes.number,
 };
 
 const TicketsTableWithRouter = withRouter(TicketsTable);

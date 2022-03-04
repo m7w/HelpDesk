@@ -4,12 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.training.helpdesk.security.SecurityUser;
 import com.training.helpdesk.ticket.converter.TicketConverter;
+import com.training.helpdesk.ticket.domain.Page;
+import com.training.helpdesk.ticket.domain.Ticket;
 import com.training.helpdesk.ticket.dto.TicketDto;
+import com.training.helpdesk.ticket.repository.QueryMetadata;
 import com.training.helpdesk.ticket.repository.TicketRepository;
 import com.training.helpdesk.ticket.service.TicketService;
 import com.training.helpdesk.user.domain.Role;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,17 +31,24 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<TicketDto> flndAllByUser(Long id, Role role, int pageNumber, int pageSize, String combinedOrder) {
+    public Page<TicketDto> flndAllByUser(QueryMetadata queryMetadata) {
 
-        String[] combinedOrderArray = combinedOrder.split("\\.");
-        String orderBy = combinedOrderArray[0];
-        String order = combinedOrderArray[1];
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        List<String> roles = auth.getAuthorities().stream()
+            .map(GrantedAuthority::getAuthority)
+            .collect(Collectors.toList());
+
+        Role role = Role.valueOf(roles.get(0));
+        SecurityUser principal = (SecurityUser) auth.getPrincipal();
+        Long id = principal.getId();
+
+        Page<Ticket> page = ticketRepository.findAllByUser(id, role, queryMetadata);
         List<TicketDto> tickets = new ArrayList<>();
-        tickets = ticketRepository.findAllByUser(id, role, pageNumber, pageSize, orderBy, order)
+        tickets = page.getEntities()
             .stream()
             .map(ticketConverter::toDto)
             .collect(Collectors.toList());
 
-        return tickets;
+        return new Page<TicketDto>(page.getCount(), tickets);
     }
 }

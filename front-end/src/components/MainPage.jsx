@@ -5,8 +5,8 @@ import { AppBar, Button, Tab, Tabs } from "@material-ui/core";
 import { Link, Switch, Route } from "react-router-dom";
 import { useHistory, withRouter } from "react-router";
 import TicketInfoWithRouter from "./TicketInfo";
-import { ALL_TICKETS, MY_TICKETS } from "../constants/mockTickets";
 import ticketService from "../services/ticketService.js";
+import { useDebouncedEffect } from "../components/DebouncedEffect";
 
 function a11yProps(index) {
   return {
@@ -18,20 +18,39 @@ function a11yProps(index) {
 function MainPage(props) {
 
   const [tabValue, setTabValue] = useState(0);
-  const [myTickets, setMyTickets] = useState(MY_TICKETS);
-  const [allTickets, setAllTickets] = useState(ALL_TICKETS);
+  const [myTickets, setMyTickets] = useState([]);
+  const [allTickets, setAllTickets] = useState([]);
   const [filteredTickets, setFilteredTickets] = useState([]);
-  const [orderBy, setOrderBy] = useState("urgency");
-  const [order, setOrder] = useState("asc");
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [orderBy, setOrderBy] = useState();
+  const [order, setOrder] = useState();
+  const [ticketsCount, setTicketsCount] = useState();
+  const [searchColumn, setSearchColumn] = useState("t.name");
+  const [searchPattern, setSearchPattern] = useState();
+  const [searchError, setSearchError] = useState();
+
+  const debouncedSearchPattern = useDebouncedEffect(searchPattern, 1000);
 
   useEffect(()=> {
     // put requests for tickets here
-    ticketService.getTickets(0, 5, orderBy, order)
+    ticketService.getTickets(page, rowsPerPage, orderBy, order, searchColumn, debouncedSearchPattern)
       .then((response) => {
-        setAllTickets(response.data);
-        setMyTickets(response.data);
+        setSearchError();
+        setTicketsCount(response.data.count);
+        setAllTickets(response.data.entities);
+        setMyTickets(response.data.entities);
+      })
+      .catch(error => {
+        switch (error.response.status) {
+          case 400:
+            setSearchError(error.response.data["getTickets.searchParams"]);
+            break;
+          default:
+            break;
+        }
       });
-  }, [orderBy, order]); 
+  }, [orderBy, order, page, rowsPerPage, searchColumn, debouncedSearchPattern]); 
 
   const handleCreate = () => {
   };
@@ -50,6 +69,12 @@ function MainPage(props) {
       setFilteredTickets([]);
   };
 
+  const handlePagination = (page, rowsPerPage) => {
+    setPage(page);
+    setRowsPerPage(rowsPerPage);
+    console.log(`page: ${page}, rowsPerPage: ${rowsPerPage}`);
+  };
+
   const handleSort = (newOrderBy) => {
     if (newOrderBy === orderBy) {
       setOrder(order === "asc" ? "desc" : "asc");
@@ -59,26 +84,12 @@ function MainPage(props) {
     }
   };
 
-  const handleSearchTicket = (event) => {
+  const handleSearchTicket = (searchColumn, searchPattern) => {
     // put search request here
 
-    //const { tabValue, myTickets, allTickets } = this.state;
-
-    if (tabValue === 0) {
-      const filteredTickets = myTickets.filter((ticket) =>
-        ticket.name.includes(event.target.value.toLowerCase())
-      );
-
-      setFilteredTickets(filteredTickets);
-    }
-
-    if (tabValue === 1) {
-      const filteredTickets = allTickets.filter((ticket) =>
-        ticket.name.includes(event.target.value.toLowerCase())
-      );
-
-      setFilteredTickets(filteredTickets);
-    }
+    setSearchColumn(searchColumn);
+    setSearchPattern(searchPattern);
+    setPage(0);
   };
 
   const { path } = props.match;
@@ -114,18 +125,21 @@ function MainPage(props) {
                 onChange={handleTabChange}
                 value={tabValue}
               >
-                <Tab label="My tickets" {...a11yProps(0)} />
-                <Tab label="All tickets" {...a11yProps(1)} />
+                <Tab label="All tickets" {...a11yProps(0)} />
+                <Tab label="My tickets" {...a11yProps(1)} />
               </Tabs>
               <TabPanel value={tabValue} index={0}>
                 <TicketsTable
                   searchCallback={handleSearchTicket}
+                  searchErrorMessage={searchError} 
                   tickets={
                     filteredTickets.length ? filteredTickets : myTickets
                   }
                   sortCallback={handleSort}
                   orderBy={orderBy}
                   order={order}
+                  paginationCallback={handlePagination}
+                  ticketsCount={ticketsCount}
                 />
               </TabPanel>
               <TabPanel value={tabValue} index={1}>
@@ -137,6 +151,8 @@ function MainPage(props) {
                   sortCallback={handleSort}
                   orderBy={orderBy}
                   order={order}
+                  paginationCallback={handlePagination}
+                  ticketsCount={ticketsCount}
                 />
               </TabPanel>
             </AppBar>

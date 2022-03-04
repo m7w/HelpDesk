@@ -10,7 +10,7 @@ public class PasswordValidator implements ConstraintValidator<PasswordConstraint
 
     private static final String MESSAGE_IF_BLANK = "Please fill out the required field.";
     private static final String PASSWORD_PATTERN = 
-        "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[~.\"(),:;<>@\\[\\]!#$%&'*+-/=?^_`{|}]).*$";
+        "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[~.\"(),:;<>@\\[\\]!#$%&'*+\\-/=?^_`{|}]).*$";
     private static final Pattern PATTERN = Pattern.compile(PASSWORD_PATTERN);
 
     @Override

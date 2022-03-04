@@ -3,9 +3,6 @@ package com.training.helpdesk.ticket.dto;
 import java.io.Serializable;
 import java.time.LocalDate;
 
-import com.training.helpdesk.ticket.domain.State;
-import com.training.helpdesk.ticket.domain.Urgency;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -21,8 +18,8 @@ public class TicketDto implements Serializable {
     String name;
     LocalDate date;
     LocalDate resolutionDate;
-    Urgency urgency;
-    State status;
+    String urgency;
+    String status;
     String category;
     String ticketOwner;
     String comment;
