@@ -1,6 +1,5 @@
 package com.training.helpdesk.ticket.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,22 +32,24 @@ public class TicketServiceImpl implements TicketService {
     @Transactional(readOnly = true)
     public Page<TicketDto> flndAllByUser(QueryMetadata queryMetadata) {
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        List<String> roles = auth.getAuthorities().stream()
-            .map(GrantedAuthority::getAuthority)
-            .collect(Collectors.toList());
-
-        Role role = Role.valueOf(roles.get(0));
-        SecurityUser principal = (SecurityUser) auth.getPrincipal();
-        Long id = principal.getId();
-
+        Role role = getUserRoles().get(0);
+        Long id = getUserId();
         Page<Ticket> page = ticketRepository.findAllByUser(id, role, queryMetadata);
-        List<TicketDto> tickets = new ArrayList<>();
-        tickets = page.getEntities()
-            .stream()
-            .map(ticketConverter::toDto)
-            .collect(Collectors.toList());
 
-        return new Page<TicketDto>(page.getCount(), tickets);
+        return ticketConverter.toDto(page);
+    }
+    
+    private List<Role> getUserRoles() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return auth.getAuthorities().stream()
+            .map(GrantedAuthority::getAuthority)
+            .map(Role::valueOf)
+            .collect(Collectors.toList());
+    }
+    
+    private Long getUserId() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        SecurityUser principal = (SecurityUser) auth.getPrincipal();
+        return principal.getId();
     }
 }

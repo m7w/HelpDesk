@@ -6,6 +6,9 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
+import SvgIcon from '@material-ui/core/SvgIcon';
+import {ArrowDropDown} from '@material-ui/icons';
+
 
 const styles = theme => ({
   root: {
@@ -13,23 +16,26 @@ const styles = theme => ({
     maxWidth: 360,
     backgroundColor: theme.palette.background.paper,
   },
+  colored: {
+    backgroundColor: "blue",
+  },
 });
 
 class DropDown extends React.Component {
   state = {
     anchorEl: null,
-    selectedIndex: 1,
+    selectedIndex: this.props.selectedIndex,
   };
 
   handleClickListItem = event => {
     this.setState({ anchorEl: event.currentTarget });
   };
 
-  handleMenuItemClick = (index, column) => {
+  handleMenuItemClick = (index) => {
     this.setState({ selectedIndex: index, anchorEl: null });
     if (typeof this.props.onSelect === 'function') {
       console.log("In handleMenuItemClick");
-      this.props.onSelect(column);
+      this.props.onSelect(index);
     }
   };
 
@@ -39,23 +45,29 @@ class DropDown extends React.Component {
 
   render() {
     const { handleClickListItem, handleMenuItemClick, handleClose } = this;
-    const { options } = this.props;
+    const { label, options, currentIndex } = this.props;
     const { anchorEl, selectedIndex } = this.state;
 
     return (
-      <div style={{width: "120px"}}>
+      <div>
         <List component="nav">
           <ListItem
+            style={{
+              ...styles.colored,
+            }}
             button
             aria-haspopup="true"
             aria-controls="lock-menu"
-            aria-label="Search by:"
+            aria-label={label}
             onClick={handleClickListItem}
           >
             <ListItemText
-              primary="Search by:"
-              secondary={options[selectedIndex].label}
+              primary={label}
+              secondary={options[currentIndex ? currentIndex : selectedIndex].label}
             />
+            <SvgIcon>
+              <ArrowDropDown />
+            </SvgIcon>
           </ListItem>
         </List>
         <Menu
@@ -69,7 +81,7 @@ class DropDown extends React.Component {
               key={option.label}
               disabled={index === selectedIndex}
               selected={index === selectedIndex}
-              onClick={() => handleMenuItemClick(index, option.db_name)}
+              onClick={() => handleMenuItemClick(index)}
             >
               {option.label}
             </MenuItem>

@@ -1,13 +1,10 @@
 import apiService from "./apiService";
 
-const getTickets = (page, size, orderBy, order, searchColumn, searchPattern) => {
+const getTickets = (inputParams) => {
     var query = "/api/tickets";
-    const params = new URLSearchParams({
-        page: page,
-        size: size,
-        order_by: orderBy,
-        order: order,
-    });
+
+    const { searchColumn, searchString, ...allButSearch } = inputParams;
+    const params = new URLSearchParams(allButSearch);
 
     [...params.entries()].forEach(([key, value]) => {
         if (value === 'undefined' || value === 'null' || !value) {
@@ -20,8 +17,8 @@ const getTickets = (page, size, orderBy, order, searchColumn, searchPattern) => 
         query = query + "?" + params;
     }
 
-    if (searchPattern !== 'undefined' && searchPattern !== 'null' && searchPattern) {
-        query = query + "&search=" + searchColumn + "==" + searchPattern;
+    if (searchString !== 'undefined' && searchString !== 'null' && searchString) {
+        query = query + "&search=" + searchColumn + "==" + encodeURIComponent(searchString);
     }
 
     console.log("query: " + query);

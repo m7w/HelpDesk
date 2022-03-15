@@ -19,6 +19,7 @@ import { Link } from "react-router-dom";
 import { withRouter } from "react-router";
 import { TICKETS_TABLE_COLUMNS } from "../constants/tablesColumns";
 import DropDown from "./DropDown";
+import TablePaginationActions from "./TablePaginationActions";
 
 class TicketsTable extends React.Component {
   constructor(props) {
@@ -44,13 +45,14 @@ class TicketsTable extends React.Component {
     console.log("handleChangeRowsPerPage");
   };
 
-  handleSelectFilter= (column) => {
-    this.setState({ searchColumn: column });
+  handleSelectFilter= (index) => {
+    const column = TICKETS_TABLE_COLUMNS[index].db_name;
+    this.setState({ page: 0, searchColumn: column });
     this.props.searchCallback(column, this.state.searchPattern);
   };
 
   handleSelectFilterPattern = event => {
-    this.setState({ searchPattern: event.target.value });
+    this.setState({ page: 0, searchPattern: event.target.value });
     this.props.searchCallback(this.state.searchColumn, event.target.value);
   };
 
@@ -83,17 +85,21 @@ class TicketsTable extends React.Component {
 
     const { page, rowsPerPage } = this.state;
     const { url } = this.props.match;
+
     return (
       <Paper>
         <TableContainer>
           <div className="search-bar">
             <DropDown 
+              style={{width: "120px"}}
+              label="Search by:"
               options={TICKETS_TABLE_COLUMNS.slice(0, 5)}
+              selectedIndex={1}
               onSelect={handleSelectFilter}
             />
             <div>
             <TextField
-              error={searchErrorMessage}
+              error={searchErrorMessage && true}
               id="filled-full-width"
               style={{ margin: 5, width: "500px" }}
               placeholder="Search for ticket"
@@ -111,31 +117,44 @@ class TicketsTable extends React.Component {
           <Table>
             <TableHead>
               <TableRow>
-                {TICKETS_TABLE_COLUMNS.map((column) => (
-                  <TableCell
-                    align={column.align} 
-                    key={column.id}
-                    sortDirection={orderBy === column.id ? order : false}
-                  >
-                    <Tooltip
-                      title="Sort"
-                      enterDelay={300}
-                    >
-                      <TableSortLabel
-                        active={orderBy === column.db_name}
-                        direction={order}
-                        onClick={() => sortCallback(column.db_name)}
+                {TICKETS_TABLE_COLUMNS.map((column) => {
+                  if (column.id !== "action") {
+                    return (
+                      <TableCell
+                        align={column.align} 
+                        key={column.id}
+                        sortDirection={orderBy === column.id ? order : false}
+                      >
+                        <Tooltip
+                          title="Sort"
+                          enterDelay={300}
+                        >
+                          <TableSortLabel
+                            active={orderBy === column.db_name}
+                            direction={order}
+                            onClick={() => sortCallback(column.db_name)}
+                          >
+                            <b>{column.label}</b>
+                          </TableSortLabel>
+                        </Tooltip>
+                      </TableCell>
+                    )
+                  } else {
+                    return (
+                      <TableCell
+                        align={column.align} 
+                        key={column.id}
                       >
                         <b>{column.label}</b>
-                      </TableSortLabel>
-                    </Tooltip>
-                  </TableCell>
-                ))}
+                      </TableCell>
+                    )
+                  }
+                })
+                }
               </TableRow>
             </TableHead>
             <TableBody>
-              {tickets
-                  .map((row, index) => {
+              {tickets.map((row, index) => {
                   return (
                     <TableRow hover role="checkbox" key={index}>
                       {TICKETS_TABLE_COLUMNS.map((column) => {
@@ -155,24 +174,13 @@ class TicketsTable extends React.Component {
                           );
                         }
                         if (column.id === "action") {
-                          return row.status === "draft" ? (
+                          return row.status !== "draft" ? (
                             <TableCell align="center" key={column.id}>
-                              <ButtonGroup>
-                                <Button
-                                  onClick={handleCancelSubmit}
-                                  variant="contained"
-                                  color="secondary"
-                                >
-                                  Cancel
-                                </Button>
-                                <Button
-                                  onClick={handleSubmitTicket}
-                                  variant="contained"
-                                  color="primary"
-                                >
-                                  Submit
-                                </Button>
-                              </ButtonGroup>
+                              <DropDown 
+                                style={{width: "120px"}}
+                                options={[{id: 0, label: "Submit"}, {id: 1, label: "Reject"}]}
+                                selectedIndex={0}
+                              />
                             </TableCell>
                           ) : (
                             <TableCell key={column.id}></TableCell>
@@ -188,13 +196,14 @@ class TicketsTable extends React.Component {
           </Table>
         </TableContainer>
         <TablePagination
-          rowsPerPageOptions={[3, 5, 10, 25, 100]}
+          rowsPerPageOptions={[2, 5, 10, 25, { label: "All", value: ticketsCount}]}
           component="div"
           count={ticketsCount}
           rowsPerPage={rowsPerPage}
           page={page}
-          onChangePage={handleChangePage}
-          onChangeRowsPerPage={handleChangeRowsPerPage}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+          ActionsComponent={TablePaginationActions}
         />
       </Paper>
     );

@@ -25,16 +25,26 @@ function MainPage(props) {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [orderBy, setOrderBy] = useState();
   const [order, setOrder] = useState();
-  const [ticketsCount, setTicketsCount] = useState();
+  const [ticketsCount, setTicketsCount] = useState(0);
   const [searchColumn, setSearchColumn] = useState("t.name");
-  const [searchPattern, setSearchPattern] = useState();
+  const [searchString, setSearchString] = useState();
   const [searchError, setSearchError] = useState();
 
-  const debouncedSearchPattern = useDebouncedEffect(searchPattern, 1000);
+  const debouncedSearchString = useDebouncedEffect(searchString, 1000);
 
   useEffect(()=> {
     // put requests for tickets here
-    ticketService.getTickets(page, rowsPerPage, orderBy, order, searchColumn, debouncedSearchPattern)
+    const params = {
+      is_my: tabValue,
+      page: page,
+      size: rowsPerPage,
+      order_by: orderBy,
+      order: order,
+      searchColumn: searchColumn,
+      searchString: debouncedSearchString,
+    };
+
+    ticketService.getTickets(params)
       .then((response) => {
         setSearchError();
         setTicketsCount(response.data.count);
@@ -50,7 +60,7 @@ function MainPage(props) {
             break;
         }
       });
-  }, [orderBy, order, page, rowsPerPage, searchColumn, debouncedSearchPattern]); 
+  }, [tabValue, orderBy, order, page, rowsPerPage, searchColumn, debouncedSearchString]); 
 
   const handleCreate = () => {
   };
@@ -84,11 +94,11 @@ function MainPage(props) {
     }
   };
 
-  const handleSearchTicket = (searchColumn, searchPattern) => {
+  const handleSearchTicket = (searchColumn, searchString) => {
     // put search request here
 
     setSearchColumn(searchColumn);
-    setSearchPattern(searchPattern);
+    setSearchString(searchString);
     setPage(0);
   };
 

@@ -29,6 +29,7 @@ public class TicketController {
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Page<TicketDto>> getTickets(
+            @RequestParam(name = "is_my", defaultValue = "false") boolean isMyFilter,
             @RequestParam(name = "page", defaultValue = "0") int pageNumber,
             @RequestParam(name = "size", defaultValue = "5") int pageSize,
             @RequestParam(name = "order_by", defaultValue = "default") String orderBy,
@@ -36,6 +37,7 @@ public class TicketController {
             @Pattern(regexp = VALIDATION_REGEXP, message = "Search request is not valid.")
             @RequestParam(name = "search", defaultValue = "") String searchParams) {
 
-        return ResponseEntity.ok(ticketService.flndAllByUser(new QueryMetadata(pageNumber, pageSize, orderBy, order, searchParams)));
+
+        return ResponseEntity.ok(ticketService.flndAllByUser(new QueryMetadata(isMyFilter, pageNumber, pageSize, orderBy, order, searchParams)));
     }
 }

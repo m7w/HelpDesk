@@ -47,23 +47,23 @@ public class Ticket {
     @Column(name = "desired_resolution_date")
     private LocalDate desiredResolutionDate;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     private User assignee;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     private User owner;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "state_id")
     private State state;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Category category;
 
     @Column(name = "urgency_id")
     private Urgency urgency;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     private User approver;
 
     @Override

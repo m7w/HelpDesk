@@ -1,6 +1,11 @@
 package com.training.helpdesk.ticket.converter.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.training.helpdesk.ticket.converter.TicketConverter;
+import com.training.helpdesk.ticket.domain.Page;
 import com.training.helpdesk.ticket.domain.Ticket;
 import com.training.helpdesk.ticket.dto.TicketDto;
 
@@ -23,5 +28,16 @@ public class TicketConverterImpl implements TicketConverter {
         dto.setComment("Comments should be implemented");
         dto.setDescription(ticket.getDescription());
         return dto;
+    }
+
+    @Override
+    public Page<TicketDto> toDto(Page<Ticket> page) {
+        List<TicketDto> tickets = new ArrayList<>();
+
+        tickets = page.getEntities().stream()
+            .map(this::toDto)
+            .collect(Collectors.toList());
+
+        return new Page<TicketDto>(page.getCount(), tickets);
     }
 }

@@ -1,7 +1,7 @@
 package com.training.helpdesk.ticket.util;
 
+import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import com.training.helpdesk.ticket.domain.Urgency;
 import com.training.helpdesk.ticket.repository.QueryMetadata;
@@ -9,86 +9,83 @@ import com.training.helpdesk.user.domain.Role;
 
 public final class QueryBuilder {
 
-    private static final String PLAIN_QUERY_START = "from Ticket t ";
+    private static final String PLAIN_QUERY_SELECT = "from Ticket t join fetch t.owner join fetch t.category ";
 
-    private static final String COUNT_QUERY_START = "select count(t.id) from Ticket t ";
+    private static final String COUNT_QUERY_SELECT = "select count(t.id) from Ticket t join t.owner ";
 
-    private static final String JOIN_FETCH_CLAUSE = " join fetch t.assignee join fetch t.owner "
-        + " join fetch t.category join fetch t.approver ";
+    private static final String FIND_ALL_EMPLOYEE_CLAUSE = " where t.owner.id = :id ";
 
-    private static final String FIND_ALL_EMPLOYEE_CLAUSE = " where owner_id = :id ";
+    private static final String FIND_ALL_MANAGER_CLAUSE = " where (t.owner.id = :id "
+        + " or (t.owner.role = 0 and t.state = 'NEW') "
+        + " or (t.approver.id = :id and t.state in ('APPROVED', 'DECLINED', 'IN_PROGRESS', 'DONE', 'CANCELED')))";
 
-    private static final String FIND_ALL_MANAGER_CLAUSE = " where (owner_id = :id "
-        + " or (owner_id in (select id from User where role_id = 0) and t.state = 'NEW') "
-        + " or (approver_id = :id and state_id in ('APPROVED', 'DECLINED', 'IN_PROGRESS', 'DONE', 'CANCELED')))";
+    private static final String FIND_MY_MANAGER_CLAUSE = " where (t.owner.id = :id "
+        + " or (t.approver.id = :id and t.state = 'APPROVED'))";
 
     private static final String FIND_ALL_ENGINEER_CLAUSE = " where (t.state = 'APPROVED' "
-        + " or (assignee_id = :id and state_id in ('IN_PROGRESS', 'DONE')))";
+        + " or (t.assignee.id = :id and t.state in ('IN_PROGRESS', 'DONE')))";
+
+    private static final String FIND_MY_ENGINEER_CLAUSE = " where t.assignee.id = :id ";
 
     private QueryBuilder() {};
 
     public static String buildPlainQuery(Role role, QueryMetadata qm) {
-        String roughQuery = prepareRoughQuery(role, qm);
-
-        return String.format(roughQuery, PLAIN_QUERY_START, JOIN_FETCH_CLAUSE)
-            + createFilterClause(qm) + createOrderClause(qm);
+        return PLAIN_QUERY_SELECT + createWhereClause(role, qm) 
+            + createFilterClause(qm) + createOrderByClause(qm);
     }
 
     public static String buildCountQuery(Role role, QueryMetadata qm) {
-        String roughQuery = prepareRoughQuery(role, qm);
-
-        return String.format(roughQuery, COUNT_QUERY_START, "") + createFilterClause(qm);
+        return COUNT_QUERY_SELECT + createWhereClause(role, qm) + createFilterClause(qm);
     }
 
-    private static String prepareRoughQuery(Role role, QueryMetadata queryMetadata) {
+    private static String createWhereClause(Role role, QueryMetadata qm) {
 
-        String roughQuery;
+        String whereClause;
         switch (role) {
             case ROLE_EMPLOYEE:
-                roughQuery = "%s %s " + FIND_ALL_EMPLOYEE_CLAUSE;
+                whereClause = FIND_ALL_EMPLOYEE_CLAUSE;
                 break;
             case ROLE_MANAGER:
-                roughQuery = "%s %s " + FIND_ALL_MANAGER_CLAUSE;
+                whereClause = qm.isMyFilter() ? FIND_MY_MANAGER_CLAUSE : FIND_ALL_MANAGER_CLAUSE;
                 break;
             default:
-                roughQuery = "%s %s " + FIND_ALL_ENGINEER_CLAUSE;
+                whereClause = qm.isMyFilter() ? FIND_MY_ENGINEER_CLAUSE : FIND_ALL_ENGINEER_CLAUSE;
                 break;
         }
 
-        return roughQuery;
+        return whereClause;
     }
 
     private static String createFilterClause(QueryMetadata qm) {
         if (!qm.getSearchParams().isBlank()) {
             String[] searchParams = qm.getSearchParams().split("==");
             String searchColumn = searchParams[0];
-            String searchPattern = searchParams[1];
+            String searchString = searchParams[1];
 
             if ("t.urgency".equals(searchColumn)) {
-                final String pattern = searchPattern;
-                String urgencies = Stream.of(Urgency.values())
-                        .filter(u -> u.toString().toLowerCase().contains(pattern.toLowerCase()))
-                        .map(Urgency::ordinal)
-                        .map(o -> o.toString())
-                        .collect(Collectors.joining(","));
+                List<Integer> ordinalsOfSubstring = Urgency.ofSubstring(searchString);
+                String urgencies = ordinalsOfSubstring.stream()
+                    .map(o -> o.toString())
+                    .collect(Collectors.joining(","));
 
                 return " and t.urgency in (" + urgencies + ")";
             }
 
-            return String.format(" and lower(%s) like lower('%%%s%%') ", searchColumn, searchPattern);
+            String escapedSearchPattern = searchString.replaceAll("([%_])", "\\\\$1").replace("'", "''");
+            return String.format(" and lower(%s) like lower('%%%s%%') ", searchColumn, escapedSearchPattern);
         } else {
             return "";
         }
     }
 
-    private static String createOrderClause(QueryMetadata qm) {
-        String orderBy = " order by ";
+    private static String createOrderByClause(QueryMetadata qm) {
+        String orderByClause = " order by ";
         if ("default".equals(qm.getOrderBy())) {
-            orderBy += "t.urgency asc, t.desiredResolutionDate desc";
+            orderByClause += "t.urgency asc, t.desiredResolutionDate desc";
         } else {
-            orderBy += qm.getOrderBy() + " " + qm.getOrder();
+            orderByClause += qm.getOrderBy() + " " + qm.getOrder();
         }
 
-        return orderBy;
+        return orderByClause;
     }
 }

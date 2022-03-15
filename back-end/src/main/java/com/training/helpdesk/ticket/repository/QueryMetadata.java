@@ -7,6 +7,7 @@ import lombok.Getter;
 @Getter
 public class QueryMetadata {
 
+    private boolean isMyFilter;
     private int pageNumber;
     private int pageSize;
     private String orderBy;
