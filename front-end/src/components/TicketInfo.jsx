@@ -9,7 +9,6 @@ import { withRouter } from "react-router";
 import { ALL_TICKETS } from "../constants/mockTickets";
 import { COMMENTS } from "../constants/mockComments";
 import { HISTORY } from "../constants/mockHistory";
-
 import {
   Button,
   ButtonGroup,
@@ -24,6 +23,8 @@ import {
   Typography,
   TextField,
 } from "@material-ui/core";
+
+import ticketService from "../services/ticketService";
 
 function a11yProps(index) {
   return {
@@ -66,27 +67,33 @@ class TicketInfo extends React.Component {
     // get required ticket by id
 
     const { ticketId } = this.props.match.params;
-    const ticket = ALL_TICKETS.find((item) => item.id === +ticketId);
-    this.setState({
-      ticketData: {
-        ...this.state.ticketData,
-        id: ticket.id,
-        date: ticket.date,
-        resolutionDate: ticket.resolutionDate,
-        name: ticket.name,
-        status: ticket.status,
-        urgency: ticket.urgency,
-        action: ticket.action,
-        category: ticket.category,
-        ticketOwner: ticket.ticketOwner,
-      },
-    });
+    ticketService.getTicket(ticketId)
+      .then((response) => {
+        const ticket = response.data;
+        this.setState({
+          ticketData: {
+            id: ticket.id,
+            name: ticket.name,
+            date: ticket.date,
+            resolutionDate: ticket.resolutionDate,
+            urgency: ticket.urgency,
+            status: ticket.status,
+            category: ticket.category,
+            ticketOwner: ticket.ticketOwner,
+            description: ticket.description,
+          },
+        });
+      });
   }
 
   handleTabChange = (event, value) => {
     this.setState({
       tabValue: value,
     });
+  };
+
+  handleValidateInput = (event) => {
+    event.target.value = event.target.value.replace(/[^ A-Za-z0-9~."(),:;<>@[\]!#$%&'*+-/=?^_`{|}]/g, "");
   };
 
   handleEnterComment = (event) => {
@@ -344,6 +351,10 @@ class TicketInfo extends React.Component {
                   variant="filled"
                   className="comment-text-field"
                   onChange={this.handleEnterComment}
+                  inputProps={{
+                    maxLength: 500,
+                  }}
+                  onInput = {this.handleValidateInput}
                 />
                 <div className="enter-comment-section__add-comment-button">
                   <Button

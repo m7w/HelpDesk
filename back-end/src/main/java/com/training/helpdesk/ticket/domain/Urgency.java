@@ -10,21 +10,25 @@ public enum Urgency {
     AVERAGE("Average"), 
     LOW("Low");
 
-    private final String urgency;
+    private final String displayValue;
 
-    Urgency(String urgency) {
-        this.urgency = urgency;
+    Urgency(String displayValue) {
+        this.displayValue = displayValue;
+    }
+
+    public String getDisplayName() {
+        return displayValue;
     }
 
     public static List<Integer> ofSubstring(String pattern) {
         return Stream.of(values())
-            .filter(u -> u.toString().toLowerCase().contains(pattern.toLowerCase()))
+            .filter(v -> v.toString().toLowerCase().contains(pattern.toLowerCase()))
             .map(Urgency::ordinal)
             .collect(Collectors.toList());
     }
 
     @Override
     public String toString() {
-        return urgency;
+        return displayValue;
     }
 }

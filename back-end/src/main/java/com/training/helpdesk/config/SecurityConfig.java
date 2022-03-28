@@ -76,9 +76,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .authorizeRequests()
             .antMatchers("/api/auth/login").permitAll()
             .antMatchers("/h2/**").permitAll()
-            .antMatchers("/**").authenticated()
+            .anyRequest().authenticated()
             .and()
             .httpBasic()
+             //for h2 console
             .and().headers().frameOptions().disable();
     }
 }

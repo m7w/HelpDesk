@@ -45,7 +45,7 @@ function TablePaginationActions(props) {
     onPageChange(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
   };
 
-  const options = [...Array(Math.floor(count / rowsPerPage) + 1).keys()]
+  const options = [...Array(Math.floor((count ? count - 1 : 0) / rowsPerPage) + 1).keys()]
     .map(i => { return {id: i, label: i + 1}})
 
   return (

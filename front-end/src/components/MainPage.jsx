@@ -5,7 +5,7 @@ import { AppBar, Button, Tab, Tabs } from "@material-ui/core";
 import { Link, Switch, Route } from "react-router-dom";
 import { useHistory, withRouter } from "react-router";
 import TicketInfoWithRouter from "./TicketInfo";
-import ticketService from "../services/ticketService.js";
+import ticketService from "../services/ticketService";
 import { useDebouncedEffect } from "../components/DebouncedEffect";
 
 function a11yProps(index) {
@@ -48,8 +48,8 @@ function MainPage(props) {
       .then((response) => {
         setSearchError();
         setTicketsCount(response.data.count);
-        setAllTickets(response.data.entities);
         setMyTickets(response.data.entities);
+        setAllTickets(response.data.entities);
       })
       .catch(error => {
         switch (error.response.status) {

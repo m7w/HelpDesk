@@ -9,4 +9,6 @@ public interface TicketConverter {
     TicketDto toDto(Ticket ticket);
 
     Page<TicketDto> toDto(Page<Ticket> page);
+
+    Ticket fromDto(TicketDto ticketDto);
 }

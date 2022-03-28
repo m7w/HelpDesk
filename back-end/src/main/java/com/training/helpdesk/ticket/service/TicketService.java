@@ -6,5 +6,11 @@ import com.training.helpdesk.ticket.repository.QueryMetadata;
 
 public interface TicketService {
 
-    Page<TicketDto> flndAllByUser(QueryMetadata queryMetadata);
+    TicketDto findById(Long id);
+
+    TicketDto findDraftByUser();
+
+    Page<TicketDto> findAllByUser(QueryMetadata queryMetadata);
+
+    Long save(TicketDto ticketDto);
 }

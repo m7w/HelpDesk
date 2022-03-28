@@ -95,11 +95,11 @@ public class Ticket {
             + ", description=" + description 
             + ", createdOn=" + createdOn 
             + ", desiredResolutionDate=" + desiredResolutionDate
-            + ", assignee=" + assignee 
-            + ", owner=" + owner 
-            + ", stateId=" + state 
-            + ", category=" + category 
+            + ", assignee=" + assignee.getFirstName() + assignee.getLastName()
+            + ", owner=" + owner.getFirstName() + owner.getLastName() 
+            + ", state=" + state 
+            + ", category=" + category.getName()
             + ", urgencyId=" + urgency
-            + ", approver=" + approver + "]";
+            + ", approver=" + approver.getFirstName() + approver.getLastName() + "]";
     }
 }

@@ -169,7 +169,7 @@ class TicketsTable extends React.Component {
                         if (column.id === "resolutionDate") {
                           return (
                             <TableCell key={column.id}>
-                              {`${value.slice(8)}/${value.slice(5, 7)}/${value.slice(0, 4)}`}
+                              {value}
                             </TableCell>
                           );
                         }

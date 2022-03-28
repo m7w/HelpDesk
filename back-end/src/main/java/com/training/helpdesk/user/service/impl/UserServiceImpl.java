@@ -27,6 +27,6 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public User findById(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("User with id=" + id + " not found"));
+            .orElseThrow(() -> new IllegalArgumentException("User with id=" + id + " not found"));
     }
 }

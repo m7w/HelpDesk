@@ -1,6 +1,7 @@
 package com.training.helpdesk.ticket.service.impl;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.training.helpdesk.security.SecurityUser;
@@ -30,7 +31,28 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<TicketDto> flndAllByUser(QueryMetadata queryMetadata) {
+    public TicketDto findById(Long id) {
+        Ticket ticket = ticketRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Ticket with id=" + id + " not found"));
+
+        return ticketConverter.toDto(ticket);
+	}
+
+    @Override
+    @Transactional(readOnly = true)
+    public TicketDto findDraftByUser() {
+        Long id = getUserId();
+        Optional<Ticket> ticket = ticketRepository.findDraftByUser(id);
+        if (ticket.isEmpty()) {
+            return new TicketDto();
+        }
+        return ticketConverter.toDto(ticket.get());
+            
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<TicketDto> findAllByUser(QueryMetadata queryMetadata) {
 
         Role role = getUserRoles().get(0);
         Long id = getUserId();
@@ -39,6 +61,13 @@ public class TicketServiceImpl implements TicketService {
         return ticketConverter.toDto(page);
     }
     
+	@Override
+    @Transactional
+	public Long save(TicketDto ticketDto) {
+        Ticket ticket = ticketConverter.fromDto(ticketDto);
+        return ticketRepository.save(ticket);
+	}
+
     private List<Role> getUserRoles() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return auth.getAuthorities().stream()

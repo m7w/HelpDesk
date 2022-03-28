@@ -1,23 +1,8 @@
 import React, { useState } from "react";
-import { Grid, Button, IconButton, TextField, Typography } from "@material-ui/core";
-import CloseIcon from "@material-ui/icons/Close";
-import authService from "../services/authService.js";
-
-function Alert(props) {
-
-  const handleCloseAlert = () => {
-    props.authErrorCallback("");
-  };
-
-  return (
-           <div className="form__auth-alert">
-             { props.message }
-             <IconButton aria-label="close" onClick={handleCloseAlert}>
-               <CloseIcon />
-             </IconButton>
-           </div>
-  );
-}
+import { Grid, Button, TextField, Typography } from "@material-ui/core";
+import authService from "../services/authService";
+import userService from "../services/userService";
+import Alert from "./Alert";
 
 function LoginPage(props) {
 
@@ -44,6 +29,11 @@ function LoginPage(props) {
           const token = response.headers.authorization;
           localStorage.setItem("token", token);
           props.authCallback(true);
+          userService.getCurrentUser()
+            .then((response) => {
+              localStorage.setItem("user", JSON.stringify(response.data));
+              props.userCallback(response.data);
+            })
         }
       })
       .catch((error) => {
@@ -56,7 +46,7 @@ function LoginPage(props) {
           case 401:
             setNameError("");
             setPasswordError(""); 
-            setAuthError("Please make sure you are using a valid email or password");
+            setAuthError("Please make sure you are using a valid email and password");
             break;
           default:
             break;
@@ -71,7 +61,7 @@ function LoginPage(props) {
             Login to the Help Desk
           </Typography>
         </div>
-        {authError &&(<Alert authErrorCallback={setAuthError} message={authError}/>)}
+        {authError &&(<Alert onClose={setAuthError} message={authError}/>)}
         <div className="container__from-wrapper">
           <form>
             <div className="container__inputs-wrapper">

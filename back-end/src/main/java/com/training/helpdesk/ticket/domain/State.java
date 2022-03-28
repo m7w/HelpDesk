@@ -9,14 +9,14 @@ public enum State {
     DONE("Done"), 
     CANCELED("Canceled");
 
-    private final String state;
+    private final String displayValue;
 
-    State(String state) {
-        this.state = state;
+    State(String displayValue) {
+        this.displayValue = displayValue;
     }
 
     @Override
     public String toString() {
-        return state;
+        return displayValue;
     }
 }
