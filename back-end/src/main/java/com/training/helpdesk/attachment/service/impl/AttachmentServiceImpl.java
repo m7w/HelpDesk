@@ -24,6 +24,13 @@ public class AttachmentServiceImpl implements AttachmentService {
     private final AttachmentConverter attachmentConverter;
     private final TicketRepository ticketRepository;
 
+    @Override
+    @Transactional(readOnly = true)
+    public Attachment findById(Long id) {
+        return attachmentRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Attachment with id=" + id + " not found"));
+    }
+
 	@Override
     @Transactional(readOnly = true)
 	public List<AttachmentDto> findByTicketId(Long id) {
@@ -36,8 +43,8 @@ public class AttachmentServiceImpl implements AttachmentService {
         Attachment attachment = new Attachment();
         attachment.setBlob(file.getBytes());
         attachment.setName(file.getOriginalFilename());
-        attachment.setTicket(ticketRepository.findById(ticketId).
-                orElseThrow(() -> new IllegalArgumentException("Exception during uploading file")));
+        attachment.setTicket(ticketRepository.findById(ticketId)
+                .orElseThrow(() -> new IllegalArgumentException("Exception during uploading file")));
 		return attachmentRepository.save(attachment);
 	}
 }

@@ -1,7 +1,7 @@
 import apiService from "./apiService";
 
 const getTickets = (inputParams) => {
-    var query = "/api/tickets";
+    let query = "/api/tickets";
 
     const { searchColumn, searchString, ...allButSearch } = inputParams;
     const params = new URLSearchParams(allButSearch);

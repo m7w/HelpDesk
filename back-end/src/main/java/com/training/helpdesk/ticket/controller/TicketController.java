@@ -71,7 +71,7 @@ public class TicketController {
     @GetMapping(value = "/urgencies", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Map<Integer, String>> getUrgencies() {
         Map<Integer, String> urgencies = Stream.of(Urgency.values())
-            .collect(Collectors.toMap(Urgency::ordinal, Urgency::getDisplayName));
+            .collect(Collectors.toMap(Urgency::ordinal, Urgency::toString));
 
         return ResponseEntity.ok(urgencies);
     }

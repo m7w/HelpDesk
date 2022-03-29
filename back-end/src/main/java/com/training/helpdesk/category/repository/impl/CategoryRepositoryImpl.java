@@ -17,7 +17,7 @@ public class CategoryRepositoryImpl implements CategoryRepository {
     private static final String FIND_ALL_CATEGORIES = "from Category";
 
     @PersistenceContext
-    EntityManager entityManager;
+    private EntityManager entityManager;
 
     @Override
     public List<Category> findAll() {

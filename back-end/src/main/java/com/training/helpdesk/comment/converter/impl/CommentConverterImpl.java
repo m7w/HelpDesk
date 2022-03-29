@@ -18,13 +18,14 @@ import lombok.AllArgsConstructor;
 public class CommentConverterImpl implements CommentConverter {
 
     private final UserService userService;
-    private final TicketRepository ticketService;
+    private final TicketRepository ticketRepository;
 
 	@Override
 	public CommentDto toDto(Comment comment) {
         CommentDto commentDto = new CommentDto();
 
         commentDto.setUserId(comment.getUser().getId());
+        commentDto.setUser(comment.getUser().getFirstName() + " " + comment.getUser().getLastName());
         commentDto.setText(comment.getText());
         commentDto.setDate(comment.getDate());
 		return commentDto;
@@ -44,7 +45,7 @@ public class CommentConverterImpl implements CommentConverter {
         comment.setUser(userService.findById(commentDto.getUserId()));
         comment.setText(commentDto.getText());
         comment.setDate(commentDto.getDate());
-        comment.setTicket(ticketService.findById(commentDto.getTicketId())
+        comment.setTicket(ticketRepository.findById(commentDto.getTicketId())
                 .orElseThrow(() -> new IllegalArgumentException("Exception in converter")));
 		return comment;
 	}

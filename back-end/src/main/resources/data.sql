@@ -26,6 +26,11 @@ INSERT INTO TICKETS(name, description, created_on, desired_resolution_date, assi
 
 -- Precreate comment
 INSERT INTO COMMENTS(user_id, text, date, ticket_id) VALUES (1, 'Grimes', '2022-03-30', 1);
+INSERT INTO COMMENTS(user_id, text, date, ticket_id) VALUES (1, 'Check comments to tickets', '2022-03-30', 2);
+
+-- Precreate history
+INSERT INTO HISTORY(ticket_id, date, action, user_id, description) VALUES (2, '2022-03-20', 'Ticket is edited', 1, 'Ticket is edited');
+INSERT INTO HISTORY(ticket_id, date, action, user_id, description) VALUES (2, '2022-03-21', 'Ticket status is changed', 3, 'Ticket status is changed from X to Y');
 /* 
 INSERT INTO TICKETS(name, description, created_on, desired_resolution_date, assignee_id, owner_id, state_id, category_id, urgency_id, approver_id) VALUES ('Ticket11', 'There should be some description, but Im lazy', '2022-01-30', '2022-02-28', 5, 1, 'NEW', 5, 1, 3);
 INSERT INTO TICKETS(name, description, created_on, desired_resolution_date, assignee_id, owner_id, state_id, category_id, urgency_id, approver_id) VALUES ('Ticket12', 'Structural linguistics is defined as a study of language based on the theory that language is a structured system of formal units such as sentences and syntax. An example of structural linguistics is phonetics', '2022-02-03', '2022-03-01', 6, 3, 'IN_PROGRESS', 2, 3, 4);

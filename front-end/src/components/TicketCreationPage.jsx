@@ -64,8 +64,8 @@ class TicketCreationPage extends React.Component {
           this.setState({
             nameValue: ticketData.name,
             resolutionDateValue: ticketData.resolutionDate,
-            urgencyValue: ticketData.urgency,
-            categoryValue: ticketData.category,
+            urgencyValue: ticketData.urgencyId,
+            categoryValue: ticketData.categoryId,
             descriptionValue: ticketData.description,
             commentValue: ticketData.comment,
           });
@@ -203,10 +203,10 @@ class TicketCreationPage extends React.Component {
       name: nameValue,
       date: this.getFormattedDate(date),
       resolutionDate: this.getFormattedDate(resolutionDateValue),
-      urgency: urgencyValue,
-      status: statusValue,
+      urgencyId: urgencyValue,
+      statusId: statusValue,
       ticketOwnerId: user.id,
-      category: categoryValue,
+      categoryId: categoryValue,
       description: descriptionValue,
       comment: commentValue,
     }
@@ -231,10 +231,16 @@ class TicketCreationPage extends React.Component {
             attachmentValue.forEach((attachment) => {
               const formData = new FormData();
               formData.append("file", attachment.file);
-              attachmentService.postAttachment(ticketId, formData);
-                //.then((response) => {
-                  //console.log(response.data);
-                //});
+              attachmentService.postAttachment(ticketId, formData)
+                .catch((error) => {
+                  let message;
+                  if (error.response.data) {
+                    message = error.response.data.message;
+                  } else {
+                    message = "Something went wrong.";
+                  }
+                  alert(`Uploading ${attachment.file.name}: ${message}\nStatus: ${error.response.status}`);
+                });
             });
           }
         }

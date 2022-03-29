@@ -16,10 +16,6 @@ public enum Urgency {
         this.displayValue = displayValue;
     }
 
-    public String getDisplayName() {
-        return displayValue;
-    }
-
     public static List<Integer> ofSubstring(String pattern) {
         return Stream.of(values())
             .filter(v -> v.toString().toLowerCase().contains(pattern.toLowerCase()))

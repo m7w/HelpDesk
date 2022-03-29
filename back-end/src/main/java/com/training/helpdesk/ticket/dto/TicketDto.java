@@ -34,14 +34,16 @@ public class TicketDto implements Serializable {
 
     @JsonFormat(pattern = "dd/MM/yyyy")
     LocalDate resolutionDate;
+    Integer urgencyId;
     String urgency;
+    Integer statusId;
     String status;
-    Long category;
+    Long categoryId;
+    String category;
 
     @NotNull
     @Min(1)
     Long ticketOwnerId;
-
     String ticketOwner;
     Long ticketApproverId;
     String ticketApprover;

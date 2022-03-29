@@ -142,6 +142,12 @@
   align-items: center;
 }
 
+.info-section-attachment {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
 .ticket-creation-form-container__form {
   margin-top: 30px;
 }

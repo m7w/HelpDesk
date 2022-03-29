@@ -51,7 +51,7 @@ function MainPage(props) {
         setMyTickets(response.data.entities);
         setAllTickets(response.data.entities);
       })
-      .catch(error => {
+      .catch((error) => {
         switch (error.response.status) {
           case 400:
             setSearchError(error.response.data["getTickets.searchParams"]);

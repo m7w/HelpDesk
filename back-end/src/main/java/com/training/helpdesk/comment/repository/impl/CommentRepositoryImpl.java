@@ -14,11 +14,11 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class CommentRepositoryImpl implements CommentRepository {
 
-    private static final String GET_COMMENTS_BY_TICKET = "from Comment where ticket.id = :id";
+    private static final String GET_COMMENTS_BY_TICKET = "from Comment where ticket.id = :id order by date desc";
     private static final String ID = "id";
 
     @PersistenceContext
-    EntityManager entityManager;
+    private EntityManager entityManager;
 
     @Override
     public Optional<Comment> findById(Long id) {

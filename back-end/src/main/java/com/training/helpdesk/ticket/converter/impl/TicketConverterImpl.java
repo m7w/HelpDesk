@@ -25,7 +25,6 @@ public class TicketConverterImpl implements TicketConverter {
     public final UserService userService;
     public final CategoryService categoryService;
 
-    /* Try Builder */
     @Override
     public TicketDto toDto(Ticket ticket) {
         TicketDto dto = new TicketDto();
@@ -33,9 +32,12 @@ public class TicketConverterImpl implements TicketConverter {
         dto.setName(ticket.getName());
         dto.setDate(ticket.getCreatedOn());
         dto.setResolutionDate(ticket.getDesiredResolutionDate());
+        dto.setUrgencyId(ticket.getUrgency().ordinal());
         dto.setUrgency(ticket.getUrgency().toString());
+        dto.setStatusId(ticket.getState().ordinal());
         dto.setStatus(ticket.getState().toString());
-        dto.setCategory(ticket.getCategory().getId());
+        dto.setCategoryId(ticket.getCategory().getId());
+        dto.setCategory(ticket.getCategory().getName());
         dto.setTicketOwnerId(ticket.getOwner().getId());
         dto.setTicketOwner(ticket.getOwner().getFirstName() + " " + ticket.getOwner().getLastName());
         User approver = ticket.getApprover();
@@ -70,9 +72,9 @@ public class TicketConverterImpl implements TicketConverter {
         ticket.setName(ticketDto.getName());
         ticket.setCreatedOn(ticketDto.getDate());
         ticket.setDesiredResolutionDate(ticketDto.getResolutionDate());
-        ticket.setUrgency(Urgency.values()[Integer.valueOf(ticketDto.getUrgency())]);
-        ticket.setState(State.values()[Integer.valueOf(ticketDto.getStatus())]);
-        ticket.setCategory(categoryService.findById(ticketDto.getCategory()));
+        ticket.setUrgency(Urgency.values()[ticketDto.getUrgencyId()]);
+        ticket.setState(State.values()[ticketDto.getStatusId()]);
+        ticket.setCategory(categoryService.findById(ticketDto.getCategoryId()));
         ticket.setOwner(userService.findById(ticketDto.getTicketOwnerId()));
         ticket.setDescription(ticketDto.getDescription());
 		return ticket;

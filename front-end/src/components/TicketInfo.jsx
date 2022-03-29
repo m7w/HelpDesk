@@ -6,10 +6,10 @@ import TabPanel from "./TabPanel";
 import TicketCreationPageWithRouter from "./TicketCreationPage";
 import { Link, Route, Switch } from "react-router-dom";
 import { withRouter } from "react-router";
-import { ALL_TICKETS } from "../constants/mockTickets";
 import { COMMENTS } from "../constants/mockComments";
 import { HISTORY } from "../constants/mockHistory";
 import {
+  Chip,
   Button,
   ButtonGroup,
   Paper,
@@ -24,6 +24,9 @@ import {
   TextField,
 } from "@material-ui/core";
 
+import attachmentService from "../services/attachmentService";
+import commentService from "../services/commentService";
+import historyService from "../services/historyService";
 import ticketService from "../services/ticketService";
 
 function a11yProps(index) {
@@ -40,6 +43,7 @@ class TicketInfo extends React.Component {
     this.state = {
       commentValue: "",
       tabValue: 0,
+      ticketAttachments: [],
       ticketComments: COMMENTS,
       ticketHistory: HISTORY,
       currentUser: {
@@ -57,13 +61,15 @@ class TicketInfo extends React.Component {
         ticketOwner: "Robert Oppenheimer",
         approver: "",
         assignee: "",
-        attachment: null,
         description: "Desc",
       },
     };
   }
 
   componentDidMount() {
+    const user = JSON.parse(localStorage.getItem("user"));
+    this.setState({ currentUser: user });
+    
     // get required ticket by id
 
     const { ticketId } = this.props.match.params;
@@ -83,6 +89,41 @@ class TicketInfo extends React.Component {
             description: ticket.description,
           },
         });
+
+        attachmentService.getAttachmentsInfo(ticketId)
+          .then((response) => {
+            this.setState({
+              ticketAttachments: response.data,
+            });
+          });
+
+        historyService.getHistory(ticketId)
+          .then((response) => {
+            this.setState({
+              ticketHistory: response.data,
+            });
+          });
+
+        commentService.getComments(ticketId)
+          .then((response) => {
+            this.setState({
+              ticketComments: response.data,
+            });
+          });
+      });
+  }
+
+  handleAttachmentDownload = (id, name) => {
+    attachmentService.getAttachment(this.state.ticketData.id, id)
+      .then((response) => {
+        const link = document.createElement('a');
+        const blob = new Blob([response.data], {type: "application/octet-stream"});
+        link.href = URL.createObjectURL(blob);
+        console.log(link.href);
+        link.download = name;
+        document.body.appendChild(link);
+        link.click();
+        link.parentNode.removeChild(link);
       });
   }
 
@@ -105,15 +146,31 @@ class TicketInfo extends React.Component {
   addComment = () => {
     // put request for comment creation here
 
-    const newComment = {
-      date: new Date().toLocaleDateString(),
-      user: this.state.currentUser.name,
-      comment: this.state.commentValue,
-    };
-    this.setState({
-      ticketComments: [...this.state.ticketComments, newComment],
-      commentValue: "",
-    });
+    const { commentValue } = this.state;
+    const { ticketId } = this.props.match.params;
+
+    if (commentValue) {
+      const comment = {
+        userId: this.state.currentUser.id,
+        text: commentValue,
+        date: new Date(),
+        ticketId: ticketId, 
+      }
+
+      commentService.postComment(ticketId, comment)
+        .then((response) => {
+          if (response.status === 201) {
+            commentService.getComments(ticketId)
+              .then((response) => {
+                this.setState({
+                  ticketComments: response.data,
+                  commentValue: "",
+                });
+              });
+          }
+        });
+    }
+
   };
 
   handleSubmitTicket = () => {
@@ -142,11 +199,10 @@ class TicketInfo extends React.Component {
       resolutionDate,
       ticketOwner,
       assignee,
-      attachment,
       description,
     } = this.state.ticketData;
 
-    const { commentValue, tabValue, ticketComments, ticketHistory } =
+    const { commentValue, tabValue, ticketAttachments, ticketComments, ticketHistory } =
       this.state;
 
     const { url } = this.props.match;
@@ -273,7 +329,22 @@ class TicketInfo extends React.Component {
                       </TableCell>
                       <TableCell>
                         <Typography align="left" variant="subtitle1">
-                          {attachment || "Not assigned"}
+                          <div className="info-section-attachment">
+                            {ticketAttachments.length > 0 ?
+                                ticketAttachments.map((attachment) => {
+                                  return (
+                                    <Chip
+                                      variant="outlined"
+                                      size="small"
+                                      label={attachment.name}
+                                      key={attachment.id}
+                                      onClick={() => this.handleAttachmentDownload(attachment.id, attachment.name)}
+                                    />
+                                  )
+                                })
+                                :
+                                "Not assigned"}
+                          </div>
                         </Typography>
                       </TableCell>
                     </TableRow>
@@ -293,7 +364,7 @@ class TicketInfo extends React.Component {
                 </Table>
               </TableContainer>
             </div>
-            {status === "draft" && (
+            {status.toLowerCase() === "draft" && (
               <div className="ticket-data-container__button-section">
                 <ButtonGroup variant="contained" color="primary">
                   <Button

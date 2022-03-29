@@ -25,6 +25,8 @@ public class CommentDto implements Serializable {
     @Min(1)
     private Long userId;
 
+    private String user;
+
     @Length(max = 500, message = "Comment must be maximum 500 characters.")
     @Pattern(regexp = VALIDATION_REGEXP, message = "Comment text is not valid.")
     private String text;
