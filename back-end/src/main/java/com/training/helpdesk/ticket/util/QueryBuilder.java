@@ -27,7 +27,13 @@ public final class QueryBuilder {
 
     private static final String FIND_MY_ENGINEER_CLAUSE = " where t.assignee.id = :id ";
 
+    private static final String TICKET_ID_CLAUSE = " and t.id = :ticketId ";
+
     private QueryBuilder() {};
+
+    public static String buildCheckAccessQuery(Role role, QueryMetadata qm) {
+        return PLAIN_QUERY_SELECT + createWhereClause(role, qm) + TICKET_ID_CLAUSE;
+    }
 
     public static String buildPlainQuery(Role role, QueryMetadata qm) {
         return PLAIN_QUERY_SELECT + createWhereClause(role, qm) 

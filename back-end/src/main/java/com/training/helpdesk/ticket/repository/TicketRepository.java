@@ -13,4 +13,6 @@ public interface TicketRepository {
     Page<Ticket> findAllByUser(Long id, Role role, QueryMetadata queryMetadata);
 
     Long save(Ticket ticket);
+
+    Boolean hasAccess(Long ticketId, Long userId, Role role, QueryMetadata queryMetadata);
 }

@@ -19,10 +19,9 @@ import org.springframework.stereotype.Repository;
 public class TicketRepositoryImpl implements TicketRepository {
     
     private static final String GET_TICKET = "from Ticket t join fetch t.owner join fetch t.category where t.id = :id";
-    private static final String GET_DRAFT = "from Ticket t join fetch t.owner join fetch t.category "
-        +" where t.owner.id = :id and t.state='DRAFT'";
 
     private static final String ID = "id";
+    private static final String TICKET_ID = "ticketId";
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -57,4 +56,17 @@ public class TicketRepositoryImpl implements TicketRepository {
         entityManager.persist(ticket);
         return ticket.getId();
     }
+
+	@Override
+	public Boolean hasAccess(Long ticketId, Long userId, Role role, QueryMetadata queryMetadata) {
+        List<Ticket> tickets = entityManager.createQuery(QueryBuilder.buildCheckAccessQuery(role, queryMetadata), Ticket.class)
+            .setParameter(ID, userId)
+            .setParameter(TICKET_ID, ticketId)
+            .getResultList();
+
+        if (tickets.isEmpty()) {
+            return false;
+        }
+		return true;
+	}
 }

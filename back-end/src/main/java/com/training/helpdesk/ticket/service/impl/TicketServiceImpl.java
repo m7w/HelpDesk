@@ -41,8 +41,9 @@ public class TicketServiceImpl implements TicketService {
     @Transactional(readOnly = true)
     public Page<TicketDto> findAllByUser(QueryMetadata queryMetadata) {
 
-        Role role = getUserRoles().get(0);
-        Long id = getUserId();
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Role role = getUserRoles(auth).get(0);
+        Long id = getUserId(auth);
         Page<Ticket> page = ticketRepository.findAllByUser(id, role, queryMetadata);
 
         return ticketConverter.toDto(page);
@@ -72,16 +73,23 @@ public class TicketServiceImpl implements TicketService {
         updatedTicket.setAssignee(ticket.getAssignee());
 	}
 
-    private List<Role> getUserRoles() {
+	@Override
+	public Boolean hasAccess(Long id) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Role role = getUserRoles(auth).get(0);
+        Long userId = getUserId(auth);
+
+        return ticketRepository.hasAccess(id, userId, role, new QueryMetadata());
+	}
+
+    private List<Role> getUserRoles(Authentication auth) {
         return auth.getAuthorities().stream()
             .map(GrantedAuthority::getAuthority)
             .map(Role::valueOf)
             .collect(Collectors.toList());
     }
     
-    private Long getUserId() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    private Long getUserId(Authentication auth) {
         SecurityUser principal = (SecurityUser) auth.getPrincipal();
         return principal.getId();
     }

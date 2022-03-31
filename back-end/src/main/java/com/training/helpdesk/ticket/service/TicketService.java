@@ -13,4 +13,6 @@ public interface TicketService {
     Long save(TicketDto ticketDto);
 
     void update(Long id, TicketDto ticketDto);
+
+    Boolean hasAccess(Long id);
 }
