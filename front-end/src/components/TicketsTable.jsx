@@ -162,7 +162,7 @@ class TicketsTable extends React.Component {
                         if (column.id === "name") {
                           return (
                             <TableCell key={column.id}>
-                              <Link to={`${url}/${row.id}`}>{value}</Link>
+                              <Link to={`${url}/${row.id}`}>{value ? value : "......."}</Link>
                             </TableCell>
                           );
                         }

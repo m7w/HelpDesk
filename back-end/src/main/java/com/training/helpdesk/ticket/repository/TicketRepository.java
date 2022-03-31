@@ -10,8 +10,6 @@ public interface TicketRepository {
 
     Optional<Ticket> findById(Long id);
 
-    Optional<Ticket> findDraftByUser(Long id);
-
     Page<Ticket> findAllByUser(Long id, Role role, QueryMetadata queryMetadata);
 
     Long save(Ticket ticket);

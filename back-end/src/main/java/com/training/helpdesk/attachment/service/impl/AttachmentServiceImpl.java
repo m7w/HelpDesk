@@ -47,4 +47,10 @@ public class AttachmentServiceImpl implements AttachmentService {
                 .orElseThrow(() -> new IllegalArgumentException("Exception during uploading file")));
 		return attachmentRepository.save(attachment);
 	}
+
+	@Override
+    @Transactional
+	public void delete(Long id) {
+        attachmentRepository.delete(id);	
+	}
 }

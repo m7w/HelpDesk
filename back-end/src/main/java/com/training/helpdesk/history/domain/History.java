@@ -31,22 +31,22 @@ public class History {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, updatable = false)
-    Long id;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    Ticket ticket;
+    private Ticket ticket;
 
     @Column(name = "date")
-    LocalDateTime date;
+    private LocalDateTime date;
 
     @Column(name = "action")
-    String action;
+    private String action;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    User user;
+    private User user;
 
     @Column(name = "description")
-    String description;
+    private String description;
 
     @Override
     public int hashCode() {

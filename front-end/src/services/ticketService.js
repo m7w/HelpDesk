@@ -29,12 +29,12 @@ const getTicket = (id) => {
   return apiService.get(`/api/tickets/${id}`);
 };
 
-const getDraft = (id) => {
-  return apiService.get("/api/tickets/draft");
-};
-
 const postTicket = (ticket) => {
   return apiService.post("/api/tickets", ticket);
+};
+
+const putTicket = (id, ticket) => {
+  return apiService.put(`/api/tickets/${id}`, ticket);
 };
 
 const getUrgencies = () => {
@@ -44,8 +44,8 @@ const getUrgencies = () => {
 const ticketService = {
   getTickets,
   getTicket,
-  getDraft,
   postTicket,
+  putTicket,
   getUrgencies,
 }
 

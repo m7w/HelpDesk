@@ -12,4 +12,6 @@ public interface AttachmentRepository {
     List<Attachment> findByTicketId(Long id);
 
     Long save(Attachment attachment);
+
+    void delete(Long id);
 }

@@ -37,4 +37,12 @@ public class AttachmentRepositoryImpl implements AttachmentRepository {
         entityManager.persist(attachment);
 		return attachment.getId();
 	}
+
+	@Override
+	public void delete(Long id) {
+	    Attachment attachment = findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Attachment with id=" + id + " not found"));
+
+        entityManager.remove(attachment);
+	}
 }

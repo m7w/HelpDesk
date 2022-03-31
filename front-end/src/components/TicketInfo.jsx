@@ -6,8 +6,6 @@ import TabPanel from "./TabPanel";
 import TicketCreationPageWithRouter from "./TicketCreationPage";
 import { Link, Route, Switch } from "react-router-dom";
 import { withRouter } from "react-router";
-import { COMMENTS } from "../constants/mockComments";
-import { HISTORY } from "../constants/mockHistory";
 import {
   Chip,
   Button,
@@ -44,24 +42,21 @@ class TicketInfo extends React.Component {
       commentValue: "",
       tabValue: 0,
       ticketAttachments: [],
-      ticketComments: COMMENTS,
-      ticketHistory: HISTORY,
-      currentUser: {
-        name: "Dave Brubeck",
-        id: 4242,
-      },
+      ticketComments: [],
+      ticketHistory: [],
       ticketData: {
-        id: 42,
-        name: "Something",
-        date: "2021-07-16",
-        category: "Hardware & Software",
-        status: "New",
-        urgency: "High",
+        id: 0,
+        name: "",
+        date: "",
+        category: "",
+        status: "",
+        statusId: 0,
+        urgency: "",
         resolutionDate: "",
-        ticketOwner: "Robert Oppenheimer",
+        owner: "",
         approver: "",
         assignee: "",
-        description: "Desc",
+        description: "",
       },
     };
   }
@@ -75,19 +70,8 @@ class TicketInfo extends React.Component {
     const { ticketId } = this.props.match.params;
     ticketService.getTicket(ticketId)
       .then((response) => {
-        const ticket = response.data;
         this.setState({
-          ticketData: {
-            id: ticket.id,
-            name: ticket.name,
-            date: ticket.date,
-            resolutionDate: ticket.resolutionDate,
-            urgency: ticket.urgency,
-            status: ticket.status,
-            category: ticket.category,
-            ticketOwner: ticket.ticketOwner,
-            description: ticket.description,
-          },
+          ticketData: response.data,
         });
 
         attachmentService.getAttachmentsInfo(ticketId)
@@ -170,11 +154,16 @@ class TicketInfo extends React.Component {
           }
         });
     }
-
   };
 
   handleSubmitTicket = () => {
     // set ticket status to 'submitted'
+    this.setState(prevState => ({
+      ticketData: {
+        ...prevState.ticketData,
+        statusId: 1,
+      },
+    }), this.handleUpdateState);
     console.log("SUBMIT ticket");
   };
 
@@ -184,7 +173,24 @@ class TicketInfo extends React.Component {
 
   handleCancelTicket = () => {
     // set ticket status to 'canceled' status
+    let approverId = null;
+    if (this.state.currentUser.role === "ROLE_MANAGER") {
+      approverId = this.state.currentUser.id;
+    }
+    this.setState(prevState => ({
+      ticketData: {
+        ...prevState.ticketData,
+        statusId: 6, 
+        approverId: approverId,
+      },
+    }), this.handleUpdateState);
     console.log("CANCEL ticket");
+  };
+
+  handleUpdateState = () => {
+    const { ticketData } = this.state;
+    ticketService.putTicket(ticketData.id, ticketData);
+    this.props.history.push("/main-page");
   };
 
   render() {
@@ -197,7 +203,7 @@ class TicketInfo extends React.Component {
       status,
       urgency,
       resolutionDate,
-      ticketOwner,
+      owner,
       assignee,
       description,
     } = this.state.ticketData;
@@ -293,7 +299,7 @@ class TicketInfo extends React.Component {
                       </TableCell>
                       <TableCell>
                         <Typography align="left" variant="subtitle1">
-                          {ticketOwner}
+                          {owner}
                         </Typography>
                       </TableCell>
                     </TableRow>
@@ -368,8 +374,8 @@ class TicketInfo extends React.Component {
               <div className="ticket-data-container__button-section">
                 <ButtonGroup variant="contained" color="primary">
                   <Button
-                    component={Link}
-                    to="/main-page"
+                    //component={Link}
+                    //to="/main-page"
                     onClick={handleSubmitTicket}
                   >
                     Submit
@@ -383,8 +389,8 @@ class TicketInfo extends React.Component {
                     Edit
                   </Button>
                   <Button
-                    component={Link}
-                    to="/main-page"
+                    //component={Link}
+                    //to="/main-page"
                     onClick={handleCancelTicket}
                   >
                     Cancel

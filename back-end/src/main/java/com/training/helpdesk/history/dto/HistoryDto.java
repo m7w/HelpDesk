@@ -11,8 +11,8 @@ import lombok.Setter;
 @Setter
 public class HistoryDto {
 
-    LocalDateTime date;
-    String user;
-    String action;
-    String description;
+    private LocalDateTime date;
+    private String user;
+    private String action;
+    private String description;
 }

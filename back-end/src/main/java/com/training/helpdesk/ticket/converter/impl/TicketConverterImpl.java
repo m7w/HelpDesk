@@ -11,6 +11,7 @@ import com.training.helpdesk.ticket.domain.State;
 import com.training.helpdesk.ticket.domain.Ticket;
 import com.training.helpdesk.ticket.domain.Urgency;
 import com.training.helpdesk.ticket.dto.TicketDto;
+import com.training.helpdesk.ticket.dto.TicketDto.TicketDtoBuilder;
 import com.training.helpdesk.user.domain.User;
 import com.training.helpdesk.user.service.UserService;
 
@@ -27,31 +28,33 @@ public class TicketConverterImpl implements TicketConverter {
 
     @Override
     public TicketDto toDto(Ticket ticket) {
-        TicketDto dto = new TicketDto();
-        dto.setId(ticket.getId());
-        dto.setName(ticket.getName());
-        dto.setDate(ticket.getCreatedOn());
-        dto.setResolutionDate(ticket.getDesiredResolutionDate());
-        dto.setUrgencyId(ticket.getUrgency().ordinal());
-        dto.setUrgency(ticket.getUrgency().toString());
-        dto.setStatusId(ticket.getState().ordinal());
-        dto.setStatus(ticket.getState().toString());
-        dto.setCategoryId(ticket.getCategory().getId());
-        dto.setCategory(ticket.getCategory().getName());
-        dto.setTicketOwnerId(ticket.getOwner().getId());
-        dto.setTicketOwner(ticket.getOwner().getFirstName() + " " + ticket.getOwner().getLastName());
+        TicketDtoBuilder builder = TicketDto.builder();
+        builder
+            .id(ticket.getId())
+            .name(ticket.getName())
+            .date(ticket.getCreatedOn())
+            .resolutionDate(ticket.getDesiredResolutionDate())
+            .urgencyId(ticket.getUrgency().ordinal())
+            .urgency(ticket.getUrgency().toString())
+            .statusId(ticket.getState().ordinal())
+            .status(ticket.getState().toString())
+            .categoryId(ticket.getCategory().getId())
+            .category(ticket.getCategory().getName())
+            .ownerId(ticket.getOwner().getId())
+            .owner(ticket.getOwner().getFirstName() + " " + ticket.getOwner().getLastName())
+            .description(ticket.getDescription());
         User approver = ticket.getApprover();
         if (approver != null) {
-            dto.setTicketApproverId(approver.getId());
-            dto.setTicketApprover(approver.getFirstName() + " " + approver.getLastName());
+            builder.approverId(approver.getId())
+                .approver(approver.getFirstName() + " " + approver.getLastName());
         }
         User assignee = ticket.getAssignee();
         if (assignee != null) {
-            dto.setTicketAssigneeId(assignee.getId());
-            dto.setTicketAssignee(assignee.getFirstName() + " " + assignee.getLastName());
+            builder.assigneeId(assignee.getId())
+                .assignee(assignee.getFirstName() + " " + assignee.getLastName());
         }
-        dto.setDescription(ticket.getDescription());
-        return dto;
+
+        return builder.build();
     }
 
     @Override
@@ -75,7 +78,13 @@ public class TicketConverterImpl implements TicketConverter {
         ticket.setUrgency(Urgency.values()[ticketDto.getUrgencyId()]);
         ticket.setState(State.values()[ticketDto.getStatusId()]);
         ticket.setCategory(categoryService.findById(ticketDto.getCategoryId()));
-        ticket.setOwner(userService.findById(ticketDto.getTicketOwnerId()));
+        ticket.setOwner(userService.findById(ticketDto.getOwnerId()));
+        if (ticketDto.getApproverId() != null) {
+            ticket.setApprover(userService.findById(ticketDto.getApproverId()));
+        }
+        if (ticketDto.getAssigneeId() != null) {
+            ticket.setAssignee(userService.findById(ticketDto.getAssigneeId()));
+        }
         ticket.setDescription(ticketDto.getDescription());
 		return ticket;
 	}

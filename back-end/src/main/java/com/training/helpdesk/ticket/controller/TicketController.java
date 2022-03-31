@@ -20,6 +20,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -50,12 +51,6 @@ public class TicketController {
         return ResponseEntity.ok(ticketService.findAllByUser(new QueryMetadata(isMyFilter, pageNumber, pageSize, orderBy, order, searchParams)));
     }
 
-    @GetMapping(value = "/draft", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TicketDto> getDraftByUser() {
-        
-        return ResponseEntity.ok(ticketService.findDraftByUser());
-    }
-
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TicketDto> getTicketById(@PathVariable("id") Long id) {
         
@@ -66,6 +61,14 @@ public class TicketController {
     public ResponseEntity<Long> save(@Valid @RequestBody TicketDto ticketDto) {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(ticketService.save(ticketDto));
+    }
+
+    @PutMapping(value = "/{id}")
+    public ResponseEntity<Void> update(@PathVariable("id") Long id, 
+            @Valid @RequestBody TicketDto ticketDto) {
+
+        ticketService.update(id, ticketDto);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @GetMapping(value = "/urgencies", produces = MediaType.APPLICATION_JSON_VALUE)

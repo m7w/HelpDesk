@@ -1,7 +1,6 @@
 package com.training.helpdesk.ticket.service.impl;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.training.helpdesk.security.SecurityUser;
@@ -40,18 +39,6 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     @Transactional(readOnly = true)
-    public TicketDto findDraftByUser() {
-        Long id = getUserId();
-        Optional<Ticket> ticket = ticketRepository.findDraftByUser(id);
-        if (ticket.isEmpty()) {
-            return new TicketDto();
-        }
-        return ticketConverter.toDto(ticket.get());
-            
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public Page<TicketDto> findAllByUser(QueryMetadata queryMetadata) {
 
         Role role = getUserRoles().get(0);
@@ -66,6 +53,23 @@ public class TicketServiceImpl implements TicketService {
 	public Long save(TicketDto ticketDto) {
         Ticket ticket = ticketConverter.fromDto(ticketDto);
         return ticketRepository.save(ticket);
+	}
+
+	@Override
+    @Transactional
+	public void update(Long id, TicketDto ticketDto) {
+        Ticket ticket = ticketConverter.fromDto(ticketDto);
+        Ticket updatedTicket = ticketRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Ticket with id=" + id + " not found"));
+
+        updatedTicket.setName(ticket.getName());
+        updatedTicket.setCategory(ticket.getCategory());
+        updatedTicket.setDescription(ticket.getDescription());
+        updatedTicket.setUrgency(ticket.getUrgency());
+        updatedTicket.setDesiredResolutionDate(ticket.getDesiredResolutionDate());
+        updatedTicket.setState(ticket.getState());
+        updatedTicket.setApprover(ticket.getApprover());
+        updatedTicket.setAssignee(ticket.getAssignee());
 	}
 
     private List<Role> getUserRoles() {

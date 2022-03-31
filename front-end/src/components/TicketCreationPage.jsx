@@ -16,7 +16,6 @@ import {
   KeyboardDatePicker 
 } from "@material-ui/pickers";
 import { Link, withRouter } from "react-router-dom";
-import { ALL_TICKETS } from "../constants/mockTickets";
 import categoryService from "../services/categoryService";
 import ticketService from "../services/ticketService";
 import commentService from "../services/commentService";
@@ -28,6 +27,7 @@ class TicketCreationPage extends React.Component {
     super(props);
 
     this.state = {
+      ticketId: 0,
       nameValue: "",
       resolutionDateValue: new Date(),
       urgencyValue: 0, //Critical
@@ -42,9 +42,7 @@ class TicketCreationPage extends React.Component {
       CATEGORIES_OPTIONS: [],
       URGENCY_OPTIONS: [],
     };
-  }
 
-  componentDidMount() {
     categoryService.getCategories()
       .then((response) => {
         this.setState({CATEGORIES_OPTIONS: response.data});
@@ -54,23 +52,40 @@ class TicketCreationPage extends React.Component {
       .then((response) => {
         this.setState({URGENCY_OPTIONS: response.data});
       })
+  }
 
+  componentDidMount() {
     // set request for getting ticket in draft state
-    ticketService.getDraft()
-      .then((response) => {
-        const ticketData = response.data;
+    const ticketFromUrl = this.props.location.pathname.split("/");
+    const ticketId = ticketFromUrl[ticketFromUrl.length - 1];
 
-        if (ticketData.id) {
-          this.setState({
-            nameValue: ticketData.name,
-            resolutionDateValue: ticketData.resolutionDate,
-            urgencyValue: ticketData.urgencyId,
-            categoryValue: ticketData.categoryId,
-            descriptionValue: ticketData.description,
-            commentValue: ticketData.comment,
-          });
-        }
-      });
+    if (/^\d+$/.test(ticketId)) {
+      ticketService.getTicket(ticketId)
+        .then((response) => {
+          const ticketData = response.data;
+          if (ticketData) {
+            this.setState({
+              ticketId: ticketId,
+              nameValue: ticketData.name,
+              resolutionDateValue: new Date(Date.parse(ticketData.resolutionDate.split("/").reverse().join("-"))),
+              urgencyValue: ticketData.urgencyId,
+              categoryValue: ticketData.categoryId,
+              descriptionValue: ticketData.description,
+              commentValue: ticketData.comment,
+            });
+          }
+
+          attachmentService.getAttachmentsInfo(ticketId)
+            .then((response) => {
+              if (response.data) {
+                this.setState({
+                  attachmentValue: response.data.map((a) => {return {key: a.id, file: a.name, uploaded: true}}),
+                  attachmentNumber: Math.max.apply(null, response.data.map((a) => {return a.id})) + 1,
+                });
+              }
+            });
+        });
+    }
   };
 
   handleCategoryChange = (event) => {
@@ -118,12 +133,13 @@ class TicketCreationPage extends React.Component {
       const attachment = {
         key: this.state.attachmentNumber,
         file: file,
+        uploaded: false,
       }
       this.setState({
         attachmentValue: [...this.state.attachmentValue, attachment], 
         attachmentNumber: this.state.attachmentNumber + 1,
         attachmentError: "",
-      });
+      }, () => console.log(this.state.attachmentValue));
     }
   };
 
@@ -143,17 +159,33 @@ class TicketCreationPage extends React.Component {
     return false;
   }
 
-  handleAttachmentDelete = (key) => {
+  handleAttachmentDelete = (index) => {
+    const attachment = this.state.attachmentValue[index];
+    if (attachment.uploaded) {
+      attachmentService.deleteAttachment(this.state.ticketId, attachment.key);
+    }
     this.setState({
-      attachmentValue: [...this.state.attachmentValue].filter((a) => a.key !== key),
+      attachmentValue: [...this.state.attachmentValue].filter((a) => a.key !== attachment.key),
     });
   }
 
-  handleAttachmentDownload = (key) => {
-    const attachment = this.state.attachmentValue[key];
+  handleAttachmentDownload = (index) => {
+    const attachment = this.state.attachmentValue[index];
+    if (attachment.uploaded) {
+      attachmentService.getAttachment(this.state.ticketId, attachment.key)
+        .then((response) => {
+          const blob = new Blob([response.data], {type: "application/octet-stream"});
+          this.getFile(attachment.file, blob);
+        });
+    } else {
+      this.getFile(attachment.file.name, attachment.file);
+    }
+  }
+
+  getFile = (name, blob) => {
     const link = document.createElement('a');
-    link.href = URL.createObjectURL(attachment.file);
-    link.download = attachment.file.name;
+    link.href = URL.createObjectURL(blob);
+    link.download = name;
     document.body.appendChild(link);
     link.click();
     link.parentNode.removeChild(link);
@@ -164,6 +196,7 @@ class TicketCreationPage extends React.Component {
   };
 
   getFormattedDate = (date) => {
+    console.log("date: " + date);
     let year = date.getFullYear();
     let month = (1 + date.getMonth()).toString().padStart(2, '0');
     let day = date.getDate().toString().padStart(2, '0');
@@ -172,10 +205,7 @@ class TicketCreationPage extends React.Component {
 
   handleSaveDraft = () => {
     // put change of status to draft here
-    this.setState({ statusValue: 0,
-    }, () => {
-      this.handleSubmitTicket();
-    });
+    this.setState({ statusValue: 0 }, this.handleSubmitTicket);
   };
 
   handleSubmitTicket = () => {
@@ -205,48 +235,69 @@ class TicketCreationPage extends React.Component {
       resolutionDate: this.getFormattedDate(resolutionDateValue),
       urgencyId: urgencyValue,
       statusId: statusValue,
-      ticketOwnerId: user.id,
+      ownerId: user.id,
       categoryId: categoryValue,
       description: descriptionValue,
-      comment: commentValue,
     }
     
-    ticketService.postTicket(ticket)
-      .then((response) => {
-        if (response.status === 201) {
-          const ticketId = response.data;
-
-          if (commentValue) {
-            const comment = {
-              userId: user.id,
-              text: commentValue,
-              date: date,
-              ticketId: ticketId, 
-            }
-
-            commentService.postComment(ticketId, comment);
+    if (this.state.ticketId) {
+      const ticketId = this.state.ticketId;
+      ticketService.putTicket(ticketId, ticket)
+        .then((response) => {
+          if (response.status === 204) {
+            saveComment(ticketId);
+            saveAttachments(ticketId);
           }
-
-          if (attachmentValue) {
-            attachmentValue.forEach((attachment) => {
-              const formData = new FormData();
-              formData.append("file", attachment.file);
-              attachmentService.postAttachment(ticketId, formData)
-                .catch((error) => {
-                  let message;
-                  if (error.response.data) {
-                    message = error.response.data.message;
-                  } else {
-                    message = "Something went wrong.";
-                  }
-                  alert(`Uploading ${attachment.file.name}: ${message}\nStatus: ${error.response.status}`);
-                });
-            });
+        });
+    } else {
+      ticketService.postTicket(ticket)
+        .then((response) => {
+          if (response.status === 201) {
+            const ticketId = response.data;
+            saveComment(ticketId);
+            saveAttachments(ticketId);
           }
+        });
+    }
+
+    const saveComment = (ticketId) => {
+      if (commentValue) {
+        const comment = {
+          userId: user.id,
+          text: commentValue,
+          date: date,
+          ticketId: ticketId, 
         }
 
-        this.props.history.push("/main-page");
-      });
+        commentService.postComment(ticketId, comment);
+      }
+    }
+
+    const saveAttachments = (ticketId) => {
+      if (attachmentValue) {
+        attachmentValue.forEach((attachment) => {
+          if (!attachment.uploaded) {
+            const formData = new FormData();
+            formData.append("file", attachment.file);
+            attachmentService.postAttachment(ticketId, formData)
+              .then((response) => {
+                console.log("Uploaded: " + attachment.file.name);
+              })
+              .catch((error) => {
+                let message;
+                if (error.response.data) {
+                  message = error.response.data.message;
+                } else {
+                  message = "Something went wrong.";
+                }
+                alert(`Uploading ${attachment.file.name}: ${message}\nStatus: ${error.response.status}`);
+              });
+          }
+        });
+      }
+    }
+
+    this.props.history.goBack();
   };
 
   handleValidateInput = (event) => {
@@ -255,6 +306,7 @@ class TicketCreationPage extends React.Component {
 
   render() {
     const {
+      ticketId,
       nameValue,
       categoryValue,
       commentValue,
@@ -274,13 +326,13 @@ class TicketCreationPage extends React.Component {
     return (
       <div className="ticket-creation-form-container">
         <header className="ticket-creation-form-container__navigation-container">
-          <Button component={Link} to="/main-page" variant="contained">
-            Ticket List
+          <Button variant="contained" onClick={this.props.history.goBack}>
+            {ticketId ? "Ticket Overview" : "Ticket List"}
           </Button>
         </header>
         <div className="ticket-creation-form-container__title">
           <Typography display="block" variant="h3">
-            Create new ticket
+            {ticketId ? "Edit Ticket" : "Create new Ticket"}
           </Typography>
         </div>
         <div className="ticket-creation-form-container__form">
@@ -387,15 +439,16 @@ class TicketCreationPage extends React.Component {
                   variant="outlined"
                   onChange={this.handleAttachmentChange}
                 />
-                {attachmentValue.map((attachment) => {
+                {attachmentValue.map((attachment, index) => {
                   return (
                     <Chip
                       variant="outlined"
+                      color={attachment.uploaded ? "default" : "primary"}
                       size="small"
-                      label={attachment.file.name}
+                      label={attachment.uploaded ? attachment.file : attachment.file.name}
                       key={attachment.key}
-                      onDelete={() => this.handleAttachmentDelete(attachment.key)}
-                      onClick={() => this.handleAttachmentDownload(attachment.key)}
+                      onDelete={() => this.handleAttachmentDelete(index)}
+                      onClick={() => this.handleAttachmentDownload(index)}
                     />
                   )
                 }
@@ -445,7 +498,10 @@ class TicketCreationPage extends React.Component {
             </FormControl>
           </div>
           <section className="submit-button-section">
-            <Button variant="contained" onClick={this.handleSaveDraft}>
+            <Button 
+              variant="contained" 
+              onClick={this.handleSaveDraft}
+            >
               Save as Draft
             </Button>
             <Button

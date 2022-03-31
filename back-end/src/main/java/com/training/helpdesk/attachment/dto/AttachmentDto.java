@@ -13,6 +13,6 @@ public class AttachmentDto implements Serializable {
 
     private static final long serialVersionUID = 1677846402910361449L;
 
-    Long id;
-    String name;
+    private Long id;
+    private String name;
 }

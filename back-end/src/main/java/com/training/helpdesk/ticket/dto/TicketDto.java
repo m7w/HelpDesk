@@ -11,46 +11,48 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import org.hibernate.validator.constraints.Length;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
+@AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Getter
-@Setter
 public class TicketDto implements Serializable {
 
     private static final long serialVersionUID = 4702833855743470890L;
     private static final String VALIDATION_REGEXP = "[ a-zA-Z0-9~.\"(),:;<>@\\[\\]!#$%&'*+\\-/=?^_`{|}]*";
 
-    Long id;
+    private Long id;
 
     @Length(max = 100, message = "Ticket name must be maximum 100 characters.")
     @Pattern(regexp = VALIDATION_REGEXP, message = "Ticket name is not valid.")
-    String name;
+    private String name;
 
     @JsonFormat(pattern = "dd/MM/yyyy")
-    LocalDate date;
+    private LocalDate date;
 
     @JsonFormat(pattern = "dd/MM/yyyy")
-    LocalDate resolutionDate;
-    Integer urgencyId;
-    String urgency;
-    Integer statusId;
-    String status;
-    Long categoryId;
-    String category;
+    private LocalDate resolutionDate;
+    private Integer urgencyId;
+    private String urgency;
+    private Integer statusId;
+    private String status;
+    private Long categoryId;
+    private String category;
 
     @NotNull
     @Min(1)
-    Long ticketOwnerId;
-    String ticketOwner;
-    Long ticketApproverId;
-    String ticketApprover;
-    Long ticketAssigneeId;
-    String ticketAssignee;
+    private Long ownerId;
+    private String owner;
+    private Long approverId;
+    private String approver;
+    private Long assigneeId;
+    private String assignee;
 
     @Length(max = 500, message = "Description must be maximum 500 characters.")
     @Pattern(regexp = VALIDATION_REGEXP, message = "Description is not valid.")
-    String description;
+    private String description;
 }

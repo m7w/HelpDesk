@@ -15,4 +15,6 @@ public interface AttachmentService {
     List<AttachmentDto> findByTicketId(Long id);
 
     Long save(Long ticketId, MultipartFile file) throws IOException;
+
+    void delete(Long id);
 }

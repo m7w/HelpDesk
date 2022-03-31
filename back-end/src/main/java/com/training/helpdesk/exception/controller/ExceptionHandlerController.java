@@ -1,4 +1,4 @@
-package com.training.helpdesk.security.controller;
+package com.training.helpdesk.exception.controller;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -52,6 +52,16 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
         });
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+    }
+
+    @ExceptionHandler(value = IllegalArgumentException.class)
+    public ResponseEntity<Object> handleIllegalArgument(IllegalArgumentException e, WebRequest request) {
+
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put(PATH, request.getDescription(false));
+        body.put(STATUS, e.getMessage());
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
     }
 }
 

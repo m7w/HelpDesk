@@ -8,9 +8,9 @@ public interface TicketService {
 
     TicketDto findById(Long id);
 
-    TicketDto findDraftByUser();
-
     Page<TicketDto> findAllByUser(QueryMetadata queryMetadata);
 
     Long save(TicketDto ticketDto);
+
+    void update(Long id, TicketDto ticketDto);
 }

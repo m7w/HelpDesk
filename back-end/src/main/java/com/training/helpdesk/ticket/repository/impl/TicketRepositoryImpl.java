@@ -35,13 +35,6 @@ public class TicketRepositoryImpl implements TicketRepository {
     }
 
     @Override
-    public Optional<Ticket> findDraftByUser(Long id) {
-        return entityManager.createQuery(GET_DRAFT, Ticket.class)
-                .setParameter(ID, id)
-                .getResultStream().findFirst();
-    }
-
-    @Override
     public Page<Ticket> findAllByUser(Long id, Role role, QueryMetadata queryMetadata) {
 
         Long count = entityManager.createQuery(QueryBuilder.buildCountQuery(role, queryMetadata),
