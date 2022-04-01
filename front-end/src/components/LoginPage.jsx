@@ -28,11 +28,13 @@ function LoginPage(props) {
         if (response.status === 200) {
           const token = response.headers.authorization;
           localStorage.setItem("token", token);
-          props.authCallback(true);
+          console.log("Got token");
           userService.getCurrentUser()
             .then((response) => {
+              console.log("Got current user");
               localStorage.setItem("user", JSON.stringify(response.data));
               props.userCallback(response.data);
+              props.authCallback(true);
             })
         }
       })

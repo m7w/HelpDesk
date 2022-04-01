@@ -39,7 +39,7 @@ public class CommentConverterImpl implements CommentConverter {
 	}
 
 	@Override
-	public Comment fromDto(CommentDto commentDto) {
+	public Comment toEntity(CommentDto commentDto) {
         Comment comment = new Comment();
 
         comment.setUser(userService.findById(commentDto.getUserId()));

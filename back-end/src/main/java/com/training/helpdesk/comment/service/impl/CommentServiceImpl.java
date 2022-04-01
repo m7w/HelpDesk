@@ -38,7 +38,7 @@ public class CommentServiceImpl implements CommentService {
 	@Override
     @Transactional
 	public Long save(CommentDto commentDto) {
-        Comment comment = commentConverter.fromDto(commentDto);
+        Comment comment = commentConverter.toEntity(commentDto);
         return commentRepository.save(comment);
 	}
 }

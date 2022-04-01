@@ -10,6 +10,7 @@ import javax.validation.constraints.Pattern;
 import com.training.helpdesk.ticket.domain.Page;
 import com.training.helpdesk.ticket.domain.Urgency;
 import com.training.helpdesk.ticket.dto.TicketDto;
+import com.training.helpdesk.ticket.dto.TicketSmallDto;
 import com.training.helpdesk.ticket.repository.QueryMetadata;
 import com.training.helpdesk.ticket.service.TicketService;
 
@@ -40,7 +41,7 @@ public class TicketController {
     private final TicketService ticketService;
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Page<TicketDto>> getTicketsByUser(
+    public ResponseEntity<Page<TicketSmallDto>> getTicketsByUser(
             @RequestParam(name = "is_my", defaultValue = "false") boolean isMyFilter,
             @RequestParam(name = "page", defaultValue = "0") int pageNumber,
             @RequestParam(name = "size", defaultValue = "5") int pageSize,
@@ -67,7 +68,6 @@ public class TicketController {
     }
 
     @PutMapping(value = "/{id}")
-    @PreAuthorize("hasRole('ROLE_EMPLOYEE') or hasRole('ROLE_MANAGER')")
     public ResponseEntity<Void> update(@PathVariable("id") Long id, 
             @Valid @RequestBody TicketDto ticketDto) {
 

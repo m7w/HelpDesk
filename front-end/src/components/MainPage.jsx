@@ -20,7 +20,6 @@ function MainPage(props) {
   const [tabValue, setTabValue] = useState(0);
   const [myTickets, setMyTickets] = useState([]);
   const [allTickets, setAllTickets] = useState([]);
-  const [filteredTickets, setFilteredTickets] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [orderBy, setOrderBy] = useState();
@@ -29,6 +28,7 @@ function MainPage(props) {
   const [searchColumn, setSearchColumn] = useState("t.name");
   const [searchString, setSearchString] = useState();
   const [searchError, setSearchError] = useState();
+  const [actionClicked, setActionClicked] = useState(true);
 
   const debouncedSearchString = useDebouncedEffect(searchString, 1000);
 
@@ -54,13 +54,13 @@ function MainPage(props) {
       .catch((error) => {
         switch (error.response.status) {
           case 400:
-            setSearchError(error.response.data["getTickets.searchParams"]);
+            setSearchError(error.response.data["getTicketsByUser.searchParams"]);
             break;
           default:
             break;
         }
       });
-  }, [tabValue, orderBy, order, page, rowsPerPage, searchColumn, debouncedSearchString]); 
+  }, [tabValue, orderBy, order, page, rowsPerPage, searchColumn, debouncedSearchString, actionClicked]); 
 
   const handleCreate = () => {
   };
@@ -70,13 +70,13 @@ function MainPage(props) {
   const handleLogout = () => {
     // put logout logic here
     localStorage.removeItem("token");
+    localStorage.removeItem("user");
     props.authCallback(false);
     history.push("/");
   };
 
   const handleTabChange = (event, value) => {
       setTabValue(value);
-      setFilteredTickets([]);
   };
 
   const handlePagination = (page, rowsPerPage) => {
@@ -102,6 +102,10 @@ function MainPage(props) {
     setPage(0);
   };
 
+  const handleSelectAction = () => {
+    setActionClicked(actionClicked ? false : true);
+  }
+    
   const { path } = props.match;
 
   return (
@@ -142,27 +146,25 @@ function MainPage(props) {
                 <TicketsTable
                   searchCallback={handleSearchTicket}
                   searchErrorMessage={searchError} 
-                  tickets={
-                    filteredTickets.length ? filteredTickets : myTickets
-                  }
+                  tickets={myTickets}
                   sortCallback={handleSort}
                   orderBy={orderBy}
                   order={order}
                   paginationCallback={handlePagination}
                   ticketsCount={ticketsCount}
+                  selectActionCallback={handleSelectAction}
                 />
               </TabPanel>
               <TabPanel value={tabValue} index={1}>
                 <TicketsTable
                   searchCallback={handleSearchTicket}
-                  tickets={
-                    filteredTickets.length ? filteredTickets : allTickets
-                  }
+                  tickets={myTickets}
                   sortCallback={handleSort}
                   orderBy={orderBy}
                   order={order}
                   paginationCallback={handlePagination}
                   ticketsCount={ticketsCount}
+                  selectActionCallback={handleSelectAction}
                 />
               </TabPanel>
             </AppBar>

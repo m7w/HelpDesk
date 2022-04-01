@@ -88,8 +88,10 @@ public final class QueryBuilder {
         String orderByClause = " order by ";
         if ("default".equals(qm.getOrderBy())) {
             orderByClause += "t.urgency asc, t.desiredResolutionDate desc";
-        } else {
+        } else if ("t.id".equals(qm.getOrderBy())) {
             orderByClause += qm.getOrderBy() + " " + qm.getOrder();
+        } else {
+            orderByClause += qm.getOrderBy() + " " + qm.getOrder() + ", t.id desc";
         }
 
         return orderByClause;

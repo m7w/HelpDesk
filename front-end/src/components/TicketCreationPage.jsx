@@ -15,7 +15,7 @@ import {
   MuiPickersUtilsProvider, 
   KeyboardDatePicker 
 } from "@material-ui/pickers";
-import { Link, withRouter } from "react-router-dom";
+import { withRouter } from "react-router-dom";
 import categoryService from "../services/categoryService";
 import ticketService from "../services/ticketService";
 import commentService from "../services/commentService";

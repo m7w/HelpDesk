@@ -34,7 +34,6 @@ class DropDown extends React.Component {
   handleMenuItemClick = (index) => {
     this.setState({ selectedIndex: index, anchorEl: null });
     if (typeof this.props.onSelect === 'function') {
-      console.log("In handleMenuItemClick");
       this.props.onSelect(index);
     }
   };

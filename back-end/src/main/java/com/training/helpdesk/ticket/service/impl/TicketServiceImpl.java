@@ -8,6 +8,7 @@ import com.training.helpdesk.ticket.converter.TicketConverter;
 import com.training.helpdesk.ticket.domain.Page;
 import com.training.helpdesk.ticket.domain.Ticket;
 import com.training.helpdesk.ticket.dto.TicketDto;
+import com.training.helpdesk.ticket.dto.TicketSmallDto;
 import com.training.helpdesk.ticket.repository.QueryMetadata;
 import com.training.helpdesk.ticket.repository.TicketRepository;
 import com.training.helpdesk.ticket.service.TicketService;
@@ -39,27 +40,27 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<TicketDto> findAllByUser(QueryMetadata queryMetadata) {
+    public Page<TicketSmallDto> findAllByUser(QueryMetadata queryMetadata) {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         Role role = getUserRoles(auth).get(0);
         Long id = getUserId(auth);
         Page<Ticket> page = ticketRepository.findAllByUser(id, role, queryMetadata);
 
-        return ticketConverter.toDto(page);
+        return ticketConverter.toSmallDto(page);
     }
     
 	@Override
     @Transactional
 	public Long save(TicketDto ticketDto) {
-        Ticket ticket = ticketConverter.fromDto(ticketDto);
+        Ticket ticket = ticketConverter.toEntity(ticketDto);
         return ticketRepository.save(ticket);
 	}
 
 	@Override
     @Transactional
 	public void update(Long id, TicketDto ticketDto) {
-        Ticket ticket = ticketConverter.fromDto(ticketDto);
+        Ticket ticket = ticketConverter.toEntity(ticketDto);
         Ticket updatedTicket = ticketRepository.findById(id)
             .orElseThrow(() -> new IllegalArgumentException("Ticket with id=" + id + " not found"));
 

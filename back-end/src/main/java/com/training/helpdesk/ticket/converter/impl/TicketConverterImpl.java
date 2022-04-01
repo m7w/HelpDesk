@@ -12,6 +12,7 @@ import com.training.helpdesk.ticket.domain.Ticket;
 import com.training.helpdesk.ticket.domain.Urgency;
 import com.training.helpdesk.ticket.dto.TicketDto;
 import com.training.helpdesk.ticket.dto.TicketDto.TicketDtoBuilder;
+import com.training.helpdesk.ticket.dto.TicketSmallDto;
 import com.training.helpdesk.user.domain.User;
 import com.training.helpdesk.user.service.UserService;
 
@@ -25,6 +26,30 @@ public class TicketConverterImpl implements TicketConverter {
 
     public final UserService userService;
     public final CategoryService categoryService;
+
+    @Override
+    public TicketSmallDto toSmallDto(Ticket ticket) {
+        return TicketSmallDto.builder()
+            .id(ticket.getId())
+            .name(ticket.getName())
+            .resolutionDate(ticket.getDesiredResolutionDate())
+            .urgency(ticket.getUrgency().toString())
+            .status(ticket.getState().toString())
+            .ownerId(ticket.getOwner().getId())
+            .ownerRole(ticket.getOwner().getRole())
+            .build();
+    }
+
+    @Override
+    public Page<TicketSmallDto> toSmallDto(Page<Ticket> page) {
+        List<TicketSmallDto> dtos = new ArrayList<>();
+
+        dtos = page.getEntities().stream()
+            .map(this::toSmallDto)
+            .collect(Collectors.toList());
+
+        return new Page<TicketSmallDto>(page.getCount(), dtos);
+    }
 
     @Override
     public TicketDto toDto(Ticket ticket) {
@@ -57,19 +82,8 @@ public class TicketConverterImpl implements TicketConverter {
         return builder.build();
     }
 
-    @Override
-    public Page<TicketDto> toDto(Page<Ticket> page) {
-        List<TicketDto> dtos = new ArrayList<>();
-
-        dtos = page.getEntities().stream()
-            .map(this::toDto)
-            .collect(Collectors.toList());
-
-        return new Page<TicketDto>(page.getCount(), dtos);
-    }
-
 	@Override
-	public Ticket fromDto(TicketDto ticketDto) {
+	public Ticket toEntity(TicketDto ticketDto) {
         Ticket ticket = new Ticket();
 
         ticket.setName(ticketDto.getName());
@@ -86,6 +100,7 @@ public class TicketConverterImpl implements TicketConverter {
             ticket.setAssignee(userService.findById(ticketDto.getAssigneeId()));
         }
         ticket.setDescription(ticketDto.getDescription());
+
 		return ticket;
 	}
 }

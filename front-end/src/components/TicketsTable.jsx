@@ -1,8 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
 import {
-  ButtonGroup,
-  Button,
   Paper,
   Table,
   TableBody,
@@ -18,8 +16,11 @@ import {
 import { Link } from "react-router-dom";
 import { withRouter } from "react-router";
 import { TICKETS_TABLE_COLUMNS } from "../constants/tablesColumns";
+import { ACTIONS } from "../constants/inputsValues";
 import DropDown from "./DropDown";
+import SplitButton from "./SplitButton";
 import TablePaginationActions from "./TablePaginationActions";
+import ticketService from "../services/ticketService";
 
 class TicketsTable extends React.Component {
   constructor(props) {
@@ -30,7 +31,9 @@ class TicketsTable extends React.Component {
       rowsPerPage: 5,
       searchColumn: "t.name",
       searchPattern: "",
+      currentUser: JSON.parse(localStorage.getItem("user")), 
     };
+
   }
 
   handleChangePage = (event, page) => {
@@ -56,22 +59,74 @@ class TicketsTable extends React.Component {
     this.props.searchCallback(this.state.searchColumn, event.target.value);
   };
 
-  handleCancelSubmit = () => {
-    console.log("Cancel submit");
+  generateActions = (ticket) => {
+    const { status, ownerId, ownerRole } = ticket;
+    const { currentUser } = this.state;
+    if (currentUser.role === "ROLE_EMPLOYEE" && (status === "Draft" || status === "Declined")) {
+      return [ACTIONS[1], ACTIONS[6]];
+    }
+
+    if (currentUser.role === "ROLE_MANAGER") {
+      if (currentUser.id === ownerId && (status === "Draft" || status === "Declined")) {
+        return [ACTIONS[1], ACTIONS[6]];
+      }
+      if (ownerRole === "ROLE_EMPLOYEE" && status === "New") {
+        return [...ACTIONS.slice(2, 4), ACTIONS[6]];
+      }
+    }
+
+    if (currentUser.role === "ROLE_ENGINEER") {
+      if (status === "Approved") {
+        return [ACTIONS[4], ACTIONS[6]];
+      }
+      if (status ==="In Progress") {
+        return [ACTIONS[5]];
+      }
+    }
+
+    return []
   };
 
-  handleSubmitTicket = () => {
-    console.log("Submit ticket");
+  handleSelectAction = (ticket) => (action) => {
+    const { currentUser } = this.state;
+    ticketService.getTicket(ticket.id)
+      .then((response) => {
+        if (response.status === 200) {
+          let newTicket = response.data;
+          if (currentUser.role === 'ROLE_EMPLOYEE') {
+            newTicket = {
+              ...response.data,
+              statusId: action, 
+            }
+          } else if (currentUser.role === 'ROLE_MANAGER') {
+            newTicket = {
+              ...response.data,
+              statusId: action, 
+              approverId: currentUser.id,
+            }
+          } else if (currentUser.role === 'ROLE_ENGINEER') {
+            newTicket = {
+              ...response.data,
+              statusId: action, 
+              assigneeId: currentUser.id,
+            }
+          }
+          ticketService.putTicket(newTicket.id, newTicket)
+            .then(() => {
+              this.props.selectActionCallback();
+            });
+        }
+      });
   };
 
   render() {
     const {
       handleChangePage,
       handleChangeRowsPerPage,
-      handleCancelSubmit,
-      handleSubmitTicket,
       handleSelectFilter,
       handleSelectFilterPattern,
+      handleSelectAction,
+      generateActions,
     } = this;
 
     const { 
@@ -174,16 +229,14 @@ class TicketsTable extends React.Component {
                           );
                         }
                         if (column.id === "action") {
-                          return row.status !== "draft" ? (
+                          return (
                             <TableCell align="center" key={column.id}>
-                              <DropDown 
-                                style={{width: "120px"}}
-                                options={[{id: 0, label: "Submit"}, {id: 1, label: "Reject"}]}
-                                selectedIndex={0}
-                              />
+                              <SplitButton
+                                label="Action"
+                                options={generateActions(row)}
+                                onSelect={handleSelectAction(row)}
+                               />
                             </TableCell>
-                          ) : (
-                            <TableCell key={column.id}></TableCell>
                           );
                         } else {
                           return <TableCell key={column.id}>{value}</TableCell>;

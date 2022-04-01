@@ -11,5 +11,5 @@ public interface CommentConverter {
 
     List<CommentDto> toDto(List<Comment> comments);
 
-    Comment fromDto(CommentDto commentDto);
+    Comment toEntity(CommentDto commentDto);
 }

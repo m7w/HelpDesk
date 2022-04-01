@@ -1,15 +1,9 @@
-export const URGENCY_OPTIONS = [
-  { value: "critical", label: "Critical" },
-  { value: "high", label: "High" },
-  { value: "average", label: "Average" },
-  { value: "low", label: "Low" },
-];
-
-export const CATEGORIES_OPTIONS = [
-  { label: "Application & Service", value: "applicationAndService" },
-  { label: "Benefits & Paper Work", value: "benefitsAndPaperWork" },
-  { label: "Hardware & Software", value: "hardwareAndSoftware" },
-  { label: "People Management", value: "peopleManagement" },
-  { label: "Security & Access", value: "securityAndAccess" },
-  { label: "Workplaces & Facilities", value: 'workAndFacilities' },
+export const ACTIONS = [
+  {key: 0, label: "Create"}, 
+  {key: 1, label: "Submit"},
+  {key: 2, label: "Approve"}, 
+  {key: 3, label: "Decline"}, 
+  {key: 4, label: "Assign to Me"}, 
+  {key: 5, label: "Done"}, 
+  {key: 6, label: "Cancel"}, 
 ];

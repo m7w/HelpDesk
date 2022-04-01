@@ -20,6 +20,7 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
 
     private static final String PATH = "path";
     private static final String STATUS = "status";
+    private static final String MESSAGE = "message";
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException e,
@@ -59,7 +60,8 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
 
         Map<String, Object> body = new LinkedHashMap<>();
         body.put(PATH, request.getDescription(false));
-        body.put(STATUS, e.getMessage());
+        body.put(STATUS, HttpStatus.NOT_FOUND);
+        body.put(MESSAGE, e.getMessage());
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
     }
