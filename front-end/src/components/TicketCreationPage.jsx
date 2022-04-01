@@ -20,6 +20,7 @@ import categoryService from "../services/categoryService";
 import ticketService from "../services/ticketService";
 import commentService from "../services/commentService";
 import attachmentService from "../services/attachmentService";
+import historyService from "../services/historyService";
 import Alert from "./Alert";
 
 class TicketCreationPage extends React.Component {
@@ -41,6 +42,7 @@ class TicketCreationPage extends React.Component {
       nameError: "",
       CATEGORIES_OPTIONS: [],
       URGENCY_OPTIONS: [],
+      currentUser: JSON.parse(localStorage.getItem("user")),
     };
 
     categoryService.getCategories()
@@ -66,6 +68,7 @@ class TicketCreationPage extends React.Component {
           if (ticketData) {
             this.setState({
               ticketId: ticketId,
+              ticketStatusId: ticketData.statusId,
               nameValue: ticketData.name,
               resolutionDateValue: new Date(Date.parse(ticketData.resolutionDate.split("/").reverse().join("-"))),
               urgencyValue: ticketData.urgencyId,
@@ -162,7 +165,19 @@ class TicketCreationPage extends React.Component {
   handleAttachmentDelete = (index) => {
     const attachment = this.state.attachmentValue[index];
     if (attachment.uploaded) {
-      attachmentService.deleteAttachment(this.state.ticketId, attachment.key);
+      attachmentService.deleteAttachment(this.state.ticketId, attachment.key)
+        .then((response) => {
+          if (response.status === 204) {
+            const history = {
+              ticketId: this.state.ticketId,
+              date: new Date(),
+              userId: this.state.currentUser.id,
+              action: "File is removed",
+              description: "File is removed: \"" + attachment.file + "\"",
+            };
+            historyService.postHistory(this.state.ticketId, history);
+          }
+        });
     }
     this.setState({
       attachmentValue: [...this.state.attachmentValue].filter((a) => a.key !== attachment.key),
@@ -210,7 +225,7 @@ class TicketCreationPage extends React.Component {
 
   handleSubmitTicket = () => {
     // put submit logic here
-    const user = JSON.parse(localStorage.getItem("user"));
+    const user = this.state.currentUser;
     var date = new Date();
 
     const {
@@ -247,6 +262,11 @@ class TicketCreationPage extends React.Component {
           if (response.status === 204) {
             saveComment(ticketId);
             saveAttachments(ticketId);
+            saveHistory(ticketId, "Ticket is edited", "Ticket is edited");
+            if (ticket.statusId !== this.state.ticketStatusId) {
+              saveHistory(ticketId, "Ticket status is changed", 
+                "Ticket status is changed from \"Draft\" to \"New\"");
+            }
           }
         });
     } else {
@@ -256,7 +276,9 @@ class TicketCreationPage extends React.Component {
             const ticketId = response.data;
             saveComment(ticketId);
             saveAttachments(ticketId);
+            saveHistory(ticketId, "Ticket is created", "Ticket is created");
           }
+
         });
     }
 
@@ -281,7 +303,17 @@ class TicketCreationPage extends React.Component {
             formData.append("file", attachment.file);
             attachmentService.postAttachment(ticketId, formData)
               .then((response) => {
-                console.log("Uploaded: " + attachment.file.name);
+                const fileName = attachment.file.name;
+                console.log("Uploaded: " + fileName);
+
+                const history = {
+                  ticketId: ticketId,
+                  date: new Date(),
+                  userId: user.id,
+                  action: "File is attached",
+                  description: "File is attached: \"" + fileName + "\"",
+                };
+                historyService.postHistory(ticketId, history);
               })
               .catch((error) => {
                 let message;
@@ -295,6 +327,17 @@ class TicketCreationPage extends React.Component {
           }
         });
       }
+    }
+
+    const saveHistory = (ticketId, action, description) => {
+          const history = {
+            ticketId: ticketId,
+            date: new Date(),
+            userId: user.id,
+            action: action,
+            description: description,
+          };
+          historyService.postHistory(ticketId, history);
     }
 
     this.props.history.goBack();

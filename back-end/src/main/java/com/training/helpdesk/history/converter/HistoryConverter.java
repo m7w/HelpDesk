@@ -10,4 +10,6 @@ public interface HistoryConverter {
     public HistoryDto toDto(History history);
 
     public List<HistoryDto> toDto(List<History> history);
+
+    public History toEntity(HistoryDto historyDto);
 }

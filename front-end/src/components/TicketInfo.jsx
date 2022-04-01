@@ -189,7 +189,26 @@ class TicketInfo extends React.Component {
 
   handleUpdateState = () => {
     const { ticketData } = this.state;
-    ticketService.putTicket(ticketData.id, ticketData);
+    ticketService.putTicket(ticketData.id, ticketData)
+      .then((response) => {
+        if (response.status === 204) {
+          let status = "";
+          if (ticketData.statusId === 1) {
+            status = "\"New\"";
+          } else if (ticketData.statusId === 6) {
+            status = "\"Canceled\"";
+          }
+
+          const history = {
+            ticketId: ticketData.id,
+            date: new Date(),
+            userId: this.state.currentUser.id,
+            action: "Ticket status is changed",
+            description: "Ticket status is changed from \"Draft\" to " + status,
+          };
+          historyService.postHistory(ticketData.id, history);
+        }
+      });
     this.props.history.push("/main-page");
   };
 

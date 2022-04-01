@@ -87,7 +87,7 @@ public final class QueryBuilder {
     private static String createOrderByClause(QueryMetadata qm) {
         String orderByClause = " order by ";
         if ("default".equals(qm.getOrderBy())) {
-            orderByClause += "t.urgency asc, t.desiredResolutionDate desc";
+            orderByClause += "t.urgency asc, t.desiredResolutionDate desc, t.id desc";
         } else if ("t.id".equals(qm.getOrderBy())) {
             orderByClause += qm.getOrderBy() + " " + qm.getOrder();
         } else {

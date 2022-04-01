@@ -7,3 +7,12 @@ export const ACTIONS = [
   {key: 5, label: "Done"}, 
   {key: 6, label: "Cancel"}, 
 ];
+
+export const STATUSES = [
+"Draft", 
+"New", 
+"Approved", 
+"Declined", 
+"In Progress",
+"Done",
+"Canceled"];

@@ -3,7 +3,6 @@ package com.training.helpdesk.history.service.impl;
 import java.util.List;
 
 import com.training.helpdesk.history.converter.HistoryConverter;
-import com.training.helpdesk.history.domain.History;
 import com.training.helpdesk.history.dto.HistoryDto;
 import com.training.helpdesk.history.repository.HistoryRepository;
 import com.training.helpdesk.history.service.HistoryService;
@@ -28,7 +27,7 @@ public class HistoryServiceImpl implements HistoryService {
 
 	@Override
     @Transactional
-	public Long save(History history) {
-		return null;
+	public Long save(HistoryDto historyDto) {
+		return historyRepository.save(historyConverter.toEntity(historyDto));
 	}
 }

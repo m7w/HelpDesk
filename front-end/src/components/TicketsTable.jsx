@@ -16,11 +16,12 @@ import {
 import { Link } from "react-router-dom";
 import { withRouter } from "react-router";
 import { TICKETS_TABLE_COLUMNS } from "../constants/tablesColumns";
-import { ACTIONS } from "../constants/inputsValues";
+import { ACTIONS, STATUSES } from "../constants/inputsValues";
 import DropDown from "./DropDown";
 import SplitButton from "./SplitButton";
 import TablePaginationActions from "./TablePaginationActions";
 import ticketService from "../services/ticketService";
+import historyService from "../services/historyService";
 
 class TicketsTable extends React.Component {
   constructor(props) {
@@ -93,6 +94,7 @@ class TicketsTable extends React.Component {
       .then((response) => {
         if (response.status === 200) {
           let newTicket = response.data;
+          const prevStatus = response.data.status;
           if (currentUser.role === 'ROLE_EMPLOYEE') {
             newTicket = {
               ...response.data,
@@ -112,7 +114,19 @@ class TicketsTable extends React.Component {
             }
           }
           ticketService.putTicket(newTicket.id, newTicket)
-            .then(() => {
+            .then((response) => {
+              if (response.status === 204) {
+
+                const history = {
+                  ticketId: newTicket.id,
+                  date: new Date(),
+                  userId: currentUser.id,
+                  action: "Ticket status is changed",
+                  description: "Ticket status is changed from \"" + prevStatus + "\" to \"" + STATUSES[action] + "\"",
+                };
+                historyService.postHistory(newTicket.id, history);
+              }
+
               this.props.selectActionCallback();
             });
         }
