@@ -18,8 +18,7 @@ function a11yProps(index) {
 function MainPage(props) {
 
   const [tabValue, setTabValue] = useState(0);
-  const [myTickets, setMyTickets] = useState([]);
-  const [allTickets, setAllTickets] = useState([]);
+  const [tickets, setTickets] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [orderBy, setOrderBy] = useState();
@@ -32,7 +31,7 @@ function MainPage(props) {
 
   const debouncedSearchString = useDebouncedEffect(searchString, 1000);
 
-  useEffect(()=> {
+  useEffect(() => {
     // put requests for tickets here
     const params = {
       is_my: tabValue,
@@ -48,8 +47,7 @@ function MainPage(props) {
       .then((response) => {
         setSearchError();
         setTicketsCount(response.data.count);
-        setMyTickets(response.data.entities);
-        setAllTickets(response.data.entities);
+        setTickets(response.data.entities);
       })
       .catch((error) => {
         switch (error.response.status) {
@@ -146,7 +144,7 @@ function MainPage(props) {
                 <TicketsTable
                   searchCallback={handleSearchTicket}
                   searchErrorMessage={searchError} 
-                  tickets={myTickets}
+                  tickets={tickets}
                   sortCallback={handleSort}
                   orderBy={orderBy}
                   order={order}
@@ -158,7 +156,7 @@ function MainPage(props) {
               <TabPanel value={tabValue} index={1}>
                 <TicketsTable
                   searchCallback={handleSearchTicket}
-                  tickets={myTickets}
+                  tickets={tickets}
                   sortCallback={handleSort}
                   orderBy={orderBy}
                   order={order}
@@ -171,7 +169,7 @@ function MainPage(props) {
           </div>
         </Route>
         <Route path={`${path}/:ticketId`}>
-          <TicketInfoWithRouter />
+          <TicketInfoWithRouter onAction={handleSelectAction}/>
         </Route>
       </Switch>
     </>

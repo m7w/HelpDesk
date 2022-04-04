@@ -26,6 +26,7 @@ import attachmentService from "../services/attachmentService";
 import commentService from "../services/commentService";
 import historyService from "../services/historyService";
 import ticketService from "../services/ticketService";
+import feedbackService from "../services/feedbackService";
 
 function a11yProps(index) {
   return {
@@ -40,6 +41,8 @@ class TicketInfo extends React.Component {
 
     this.state = {
       commentValue: "",
+      currentUser: JSON.parse(localStorage.getItem("user")),
+      feedbackBtnTitle: "",
       tabValue: 0,
       ticketAttachments: [],
       ticketComments: [],
@@ -54,16 +57,16 @@ class TicketInfo extends React.Component {
         urgency: "",
         resolutionDate: "",
         owner: "",
+        ownerId: 0,
         approver: "",
         assignee: "",
+        assigneeId: 0,
         description: "",
       },
     };
   }
 
   componentDidMount() {
-    const user = JSON.parse(localStorage.getItem("user"));
-    this.setState({ currentUser: user });
     
     // get required ticket by id
 
@@ -73,6 +76,8 @@ class TicketInfo extends React.Component {
         this.setState({
           ticketData: response.data,
         });
+
+        this.handleFeedbackButton();
 
         attachmentService.getAttachmentsInfo(ticketId)
           .then((response) => {
@@ -103,7 +108,6 @@ class TicketInfo extends React.Component {
         const link = document.createElement('a');
         const blob = new Blob([response.data], {type: "application/octet-stream"});
         link.href = URL.createObjectURL(blob);
-        console.log(link.href);
         link.download = name;
         document.body.appendChild(link);
         link.click();
@@ -158,12 +162,7 @@ class TicketInfo extends React.Component {
 
   handleSubmitTicket = () => {
     // set ticket status to 'submitted'
-    this.setState(prevState => ({
-      ticketData: {
-        ...prevState.ticketData,
-        statusId: 1,
-      },
-    }), this.handleUpdateState);
+    this.handleAction(1);
     console.log("SUBMIT ticket");
   };
 
@@ -173,6 +172,11 @@ class TicketInfo extends React.Component {
 
   handleCancelTicket = () => {
     // set ticket status to 'canceled' status
+    this.handleAction(6);
+    console.log("CANCEL ticket");
+  };
+
+  handleAction = (newStatus) => {
     let approverId = null;
     if (this.state.currentUser.role === "ROLE_MANAGER") {
       approverId = this.state.currentUser.id;
@@ -180,14 +184,13 @@ class TicketInfo extends React.Component {
     this.setState(prevState => ({
       ticketData: {
         ...prevState.ticketData,
-        statusId: 6, 
+        statusId: newStatus, 
         approverId: approverId,
       },
-    }), this.handleUpdateState);
-    console.log("CANCEL ticket");
+    }), this.handleUpdateStatus);
   };
 
-  handleUpdateState = () => {
+  handleUpdateStatus = () => {
     const { ticketData } = this.state;
     ticketService.putTicket(ticketData.id, ticketData)
       .then((response) => {
@@ -207,9 +210,41 @@ class TicketInfo extends React.Component {
             description: "Ticket status is changed from \"Draft\" to " + status,
           };
           historyService.postHistory(ticketData.id, history);
+
+          this.props.history.push("/main-page");
+          this.props.onAction();
         }
       });
-    this.props.history.push("/main-page");
+  };
+
+  handleFeedbackButton = () => {
+    const { id, ownerId, assigneeId, status } = this.state.ticketData;
+    if (this.state.currentUser.id === ownerId && status === "Done") {
+      feedbackService.getFeedback(id)
+        .then((response) => {
+          if (response.status === 200) {
+            this.setState({ feedbackBtnTitle: "View Feedback" });
+          }
+        })
+        .catch((error) => {
+          if (error.response.status === 404) {
+            this.setState({ feedbackBtnTitle: "Leave Feedback" });
+          }
+        });
+    }
+    if (this.state.currentUser.id === assigneeId && status === "Done") {
+      feedbackService.getFeedback(id)
+        .then((response) => {
+          if (response.status === 200) {
+            this.setState({ feedbackBtnTitle: "View Feedback" });
+          }
+        })
+        .catch((error) => {
+          if (error.response.status === 404) {
+            this.setState({ feedbackBtnTitle: "" });
+          }
+        });
+    }
   };
 
   render() {
@@ -227,21 +262,38 @@ class TicketInfo extends React.Component {
       description,
     } = this.state.ticketData;
 
-    const { commentValue, tabValue, ticketAttachments, ticketComments, ticketHistory } =
-      this.state;
+    const { commentValue, tabValue, ticketAttachments, ticketComments, ticketHistory, feedbackBtnTitle } = this.state;
 
     const { url } = this.props.match;
 
     const { handleCancelTicket, handleEditTicket, handleSubmitTicket } = this;
 
+
     return (
       <Switch>
         <Route exact path={url}>
           <div className="ticket-data-container">
-            <div className={"ticket-data-container__back-button back-button"}>
-              <Button component={Link} to="/main-page" variant="contained">
-                Ticket list
-              </Button>
+            <div className={"ticket-data-container__head-buttons-raw"}>
+              <div className={"ticket-data-container__back-button back-button"}>
+                <Button component={Link} to="/main-page" variant="contained">
+                  Ticket list
+                </Button>
+              </div>
+              <div className={"ticket-data-container__feedback-button"}>
+                {feedbackBtnTitle &&
+                <Button 
+                  variant="contained"
+                  component={Link} 
+                  to={{
+                    pathname: "/feedback", 
+                    id: id, 
+                    name: name, 
+                    readOnly: feedbackBtnTitle === "View Feedback"
+                  }}>
+                  {feedbackBtnTitle}
+                </Button>
+                }
+              </div>
             </div>
             <div className="ticket-data-container__title">
               <Typography variant="h4">{`Ticket(${id}) - ${name}`}</Typography>

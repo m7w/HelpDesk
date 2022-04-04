@@ -104,12 +104,28 @@
   width: 90%;
 }
 
+.ticket-data-container__head-buttons-raw {
+  display: flex;
+}
+
+.ticket-data-container__feedback-button {
+  margin: 30px 10% 0 6%;
+}
+
 .ticket-data-container__back-button {
   margin: 30px 0 0 6%;
 }
 
 .ticket-data-container__enter-comment-section {
   margin: 30px 0 50px 6%;
+}
+
+.feedback-main-container {
+  margin: 30px 0 50px 6%;
+}
+
+.feedback-element-container {
+  margin: 50px 0 50px 0;
 }
 
 .comment-text-field {

@@ -18,7 +18,6 @@ export default function SplitButton(props) {
   const options = props.options;
 
   const handleClick = () => {
-    console.info(`You clicked ${options[selectedIndex]?.label} whith key ${options[selectedIndex]?.key}`);
     props.onSelect(options[selectedIndex]?.key);
   };
 
@@ -49,7 +48,10 @@ export default function SplitButton(props) {
             color="primary" 
             ref={anchorRef} 
             aria-label="split button">
-            <Button onClick={handleClick}>{options[selectedIndex]?.label}</Button>
+            <Button 
+              style={{minWidth:"130px", fontSize: "0.9em"}} 
+              onClick={handleClick}>{options[selectedIndex]?.label}
+            </Button>
             <Button
               color="primary"
               size="small"

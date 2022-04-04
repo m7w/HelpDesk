@@ -3,6 +3,7 @@ import LoginPage from "./components/LoginPage";
 import MainPageWithRouter from "./components/MainPage";
 import TicketInfo from "./components/TicketInfo";
 import TicketCreationPageWithRouter from "./components/TicketCreationPage";
+import FeedbackPageWithRouter from "./components/FeedbackPage";
 import { useState } from "react";
 import {
   BrowserRouter as Router,
@@ -35,6 +36,9 @@ function App() {
               </Route>
               <Route exact path="/ticket-info/:ticketId">
                 <TicketInfo />
+              </Route>
+              <Route exact path="/feedback">
+                <FeedbackPageWithRouter />
               </Route>
               <ProtectedRoute
                 path="/create-ticket"
