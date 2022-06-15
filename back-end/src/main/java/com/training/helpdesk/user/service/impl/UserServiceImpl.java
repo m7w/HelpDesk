@@ -2,6 +2,7 @@ package com.training.helpdesk.user.service.impl;
 
 import java.util.List;
 
+import com.training.helpdesk.user.domain.Role;
 import com.training.helpdesk.user.domain.User;
 import com.training.helpdesk.user.repository.UserRepository;
 import com.training.helpdesk.user.service.UserService;
@@ -29,4 +30,9 @@ public class UserServiceImpl implements UserService {
         return userRepository.findById(id)
             .orElseThrow(() -> new IllegalArgumentException("User with id=" + id + " not found"));
     }
+
+	@Override
+	public List<User> findByRole(Role role) {
+		return userRepository.findByRole(role);
+	}
 }

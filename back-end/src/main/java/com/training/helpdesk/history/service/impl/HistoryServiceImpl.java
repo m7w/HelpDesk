@@ -10,10 +10,10 @@ import com.training.helpdesk.history.service.HistoryService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class HistoryServiceImpl implements HistoryService {
 
     private final HistoryRepository historyRepository;

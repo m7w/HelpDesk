@@ -13,7 +13,7 @@ public interface TicketService {
 
     Long save(TicketDto ticketDto);
 
-    void update(Long id, TicketDto ticketDto);
+    void update(TicketDto ticketDto);
 
     Boolean hasAccess(Long id);
 }

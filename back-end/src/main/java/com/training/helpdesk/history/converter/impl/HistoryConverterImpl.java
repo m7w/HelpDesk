@@ -1,4 +1,4 @@
-package com.training.helpdesk.history.dto.impl;
+package com.training.helpdesk.history.converter.impl;
 
 import java.util.List;
 import java.util.stream.Collectors;

@@ -86,6 +86,7 @@ public class TicketConverterImpl implements TicketConverter {
 	public Ticket toEntity(TicketDto ticketDto) {
         Ticket ticket = new Ticket();
 
+        ticket.setId(ticketDto.getId());
         ticket.setName(ticketDto.getName());
         ticket.setCreatedOn(ticketDto.getDate());
         ticket.setDesiredResolutionDate(ticketDto.getResolutionDate());

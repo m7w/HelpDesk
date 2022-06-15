@@ -6,6 +6,7 @@ import java.util.Optional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import com.training.helpdesk.user.domain.Role;
 import com.training.helpdesk.user.domain.User;
 import com.training.helpdesk.user.repository.UserRepository;
 
@@ -16,7 +17,9 @@ public class UserRepositoryImpl implements UserRepository {
 
     private static final String FIND_ALL_USERS = "from User";
     private static final String FIND_BY_EMAIL = "from User where email = :email";
+    private static final String FIND_BY_ROLE = "from User where role = :role";
     private static final String EMAIL = "email";
+    private static final String ROLE = "role";
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -34,7 +37,14 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public Optional<User> findByEmail(String email) {
         return entityManager.createQuery(FIND_BY_EMAIL, User.class)
-                .setParameter(EMAIL, email)
-                .getResultStream().findFirst();
+            .setParameter(EMAIL, email)
+            .getResultStream().findFirst();
     }
+
+	@Override
+	public List<User> findByRole(Role role) {
+        return entityManager.createQuery(FIND_BY_ROLE, User.class)
+            .setParameter(ROLE, role)
+            .getResultList();
+	}
 }

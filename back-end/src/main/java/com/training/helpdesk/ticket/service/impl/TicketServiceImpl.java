@@ -3,9 +3,11 @@ package com.training.helpdesk.ticket.service.impl;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.training.helpdesk.mail.service.MailService;
 import com.training.helpdesk.security.SecurityUser;
 import com.training.helpdesk.ticket.converter.TicketConverter;
 import com.training.helpdesk.ticket.domain.Page;
+import com.training.helpdesk.ticket.domain.State;
 import com.training.helpdesk.ticket.domain.Ticket;
 import com.training.helpdesk.ticket.dto.TicketDto;
 import com.training.helpdesk.ticket.dto.TicketSmallDto;
@@ -28,6 +30,7 @@ public class TicketServiceImpl implements TicketService {
 
     private final TicketRepository ticketRepository;
     private final TicketConverter ticketConverter;
+    private final MailService mailService;
 
     @Override
     @Transactional(readOnly = true)
@@ -54,24 +57,38 @@ public class TicketServiceImpl implements TicketService {
     @Transactional
 	public Long save(TicketDto ticketDto) {
         Ticket ticket = ticketConverter.toEntity(ticketDto);
-        return ticketRepository.save(ticket);
+        
+        Long id = ticketRepository.save(ticket);
+        return id;
 	}
 
 	@Override
     @Transactional
-	public void update(Long id, TicketDto ticketDto) {
+	public void update(TicketDto ticketDto) {
         Ticket ticket = ticketConverter.toEntity(ticketDto);
-        Ticket updatedTicket = ticketRepository.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("Ticket with id=" + id + " not found"));
 
-        updatedTicket.setName(ticket.getName());
-        updatedTicket.setCategory(ticket.getCategory());
-        updatedTicket.setDescription(ticket.getDescription());
-        updatedTicket.setUrgency(ticket.getUrgency());
-        updatedTicket.setDesiredResolutionDate(ticket.getDesiredResolutionDate());
-        updatedTicket.setState(ticket.getState());
-        updatedTicket.setApprover(ticket.getApprover());
-        updatedTicket.setAssignee(ticket.getAssignee());
+        State oldState = ticketRepository.findById(ticket.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Ticket with id=" + ticket.getId() + " not found"))
+            .getState();
+
+        ticketRepository.update(ticket);
+        mailService.notify(ticket, oldState);
+/*
+ *        Ticket updatedTicket = ticketRepository.findById(ticket.getId())
+ *            .orElseThrow(() -> new IllegalArgumentException("Ticket with id=" + ticket.getId() + " not found"));
+ *
+ *        updatedTicket.setName(ticket.getName());
+ *        updatedTicket.setCategory(ticket.getCategory());
+ *        updatedTicket.setDescription(ticket.getDescription());
+ *        updatedTicket.setUrgency(ticket.getUrgency());
+ *        updatedTicket.setDesiredResolutionDate(ticket.getDesiredResolutionDate());
+ *        if (updatedTicket.getState() == State.NEW && ticket.getState() == State.DECLINED) {
+ *            mailService.sendMail("Ticket was declined", new MailDetails(updatedTicket.getOwner(), id));
+ *        }
+ *        updatedTicket.setState(ticket.getState());
+ *        updatedTicket.setApprover(ticket.getApprover());
+ *        updatedTicket.setAssignee(ticket.getAssignee());
+ */
 	}
 
 	@Override

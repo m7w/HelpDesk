@@ -239,12 +239,8 @@ class TicketInfo extends React.Component {
             this.setState({ feedbackBtnTitle: "View Feedback" });
           }
         })
-        .catch((error) => {
-          if (error.response.status === 404) {
-            this.setState({ feedbackBtnTitle: "" });
-          }
-        });
     }
+    console.log("FeedbackBtnTitle: " + this.state.feedbackBtnTitle);
   };
 
   render() {

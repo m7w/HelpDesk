@@ -46,16 +46,18 @@ function FeedbackPage(props) {
       setCommentValue(event.target.value);
   };
 
-  const loadFeedback = () => {
+  useEffect(() => {
+    if (readOnly) {
     feedbackService.getFeedback(id)
       .then((response) => {
+        console.log("Hey FEEDBACK from FeedbackPage");
         if (response.status === 200) {
           setMessage("Feedback");
           setRateValue(response.data.rate);
           setCommentValue(response.data.text);
         }
-      });
-  };
+      });}
+  }, []);
 
   const handleSubmitFeedback = () => {
     if (rateValue === 0) {
@@ -63,11 +65,11 @@ function FeedbackPage(props) {
       return;
     }
     const user = JSON.parse(localStorage.getItem("user"));
-    ticketService.getTicket(id)
-      .then((response) => {
-        if (response.status === 200) {
-          const ticket = response.data;
-          if (ticket.ownerId === user.id && ticket.status === "Done") {
+    //ticketService.getTicket(id)
+      //.then((response) => {
+        //if (response.status === 200) {
+          //const ticket = response.data;
+          //if (ticket.ownerId === user.id && ticket.status === "Done") {
             const feedback = {
               userId: user.id,
               ticketId: id,
@@ -75,18 +77,16 @@ function FeedbackPage(props) {
               date: new Date(),
               text: commentValue,
             }
-            feedbackService.postFeedback(id, feedback);
-          }
-        }
-      });
+            feedbackService.postFeedback(id, feedback)
+      .then((response) => {
+          //}
+        //}
+      //});
     props.history.goBack()
+      });
   };
 
   const { id, name, readOnly } = props.location;
-
-  if (readOnly) {
-    loadFeedback();
-  }
 
   return (
     <div className="ticket-data-container">

@@ -4,10 +4,10 @@ import com.training.helpdesk.ticket.service.TicketService;
 
 import org.springframework.stereotype.Component;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 @Component
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class AccessChecker {
 
     private final TicketService ticketService;

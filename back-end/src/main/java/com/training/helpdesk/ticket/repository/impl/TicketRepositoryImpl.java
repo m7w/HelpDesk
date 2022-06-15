@@ -57,6 +57,11 @@ public class TicketRepositoryImpl implements TicketRepository {
         return ticket.getId();
     }
 
+    @Override
+    public Ticket update(Ticket ticket) {
+        return entityManager.merge(ticket);
+    }
+
 	@Override
 	public Boolean hasAccess(Long ticketId, Long userId, Role role, QueryMetadata queryMetadata) {
         List<Ticket> tickets = entityManager.createQuery(QueryBuilder.buildCheckAccessQuery(role, queryMetadata), Ticket.class)

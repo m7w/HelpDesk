@@ -277,6 +277,7 @@ class TicketCreationPage extends React.Component {
             saveComment(ticketId);
             saveAttachments(ticketId);
             saveHistory(ticketId, "Ticket is created", "Ticket is created");
+            this.props.history.goBack();
           }
 
         });
@@ -340,7 +341,6 @@ class TicketCreationPage extends React.Component {
           historyService.postHistory(ticketId, history);
     }
 
-    this.props.history.goBack();
   };
 
   handleValidateInput = (event) => {

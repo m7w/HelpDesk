@@ -27,28 +27,36 @@ spring:
   jpa:
     open-in-view: false
     defer-datasource-initialization: true
-    show-sql: true
     hibernate:
       ddl-auto: create-drop
     properties:
       hibernate:
-        format_sql: true
         jdbc:
           time_zone: UTC
   servlet:
     multipart:
       max-file-size: 5MB
+  thymeleaf:
+    cache: false
+    mode: HTML
+    prefix: classpath:/templates/
+    suffix: .html
+    view-names: mail/*
   mail:
     host: smtp.gmail.com
     port: 587
     username: mk.test.only@gmail.com
-    password: LkzNtcnjdNjkmrj
+    password: rmysrxfgwrgymnks
     protocol: smtp
     properties:
-      debug: true
-      smtp:
-        auth: true
-        starttls.enable: true
+      mail:
+        smtp:
+          from: mk.test.only@gmail.com
+          auth: true
+          starttls.enable: true
+          connectiontimeout: 5000
+          timeout: 3000
+          writetimeout: 5000
 
 jwt:
   secret: AllYourBaseAreBelongToUsNoException
@@ -64,12 +72,17 @@ spring:
       enabled: true
       path: /h2
   jpa:
+    show-sql: true
     properties:
       hibernate:
+        format_sql: true
         generate_statistics: true
+  mail:
+    properties:
+      mail:
+        debug: true
 ---
 spring:
   config:
     activate:
       on-profile: prod
-

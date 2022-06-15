@@ -28,10 +28,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 @RestController
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Validated
 @RequestMapping("/api/tickets")
 public class TicketController {
@@ -71,7 +71,7 @@ public class TicketController {
     public ResponseEntity<Void> update(@PathVariable("id") Long id, 
             @Valid @RequestBody TicketDto ticketDto) {
 
-        ticketService.update(id, ticketDto);
+        ticketService.update(ticketDto);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 

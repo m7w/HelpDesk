@@ -31,8 +31,6 @@ public class FeedbackConverterImpl implements FeedbackConverter {
 
 	@Override
 	public Feedback toEntity(FeedbackDto feedbackDto) {
-        //Feedback feedback = new Feedback();
-        //feedback.setDate(feedbackDto.getDate());
         return Feedback.builder()
             .user(userService.findById(feedbackDto.getUserId()))
             .rate(feedbackDto.getRate())

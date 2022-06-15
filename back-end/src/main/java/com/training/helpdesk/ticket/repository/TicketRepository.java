@@ -14,5 +14,7 @@ public interface TicketRepository {
 
     Long save(Ticket ticket);
 
+    Ticket update(Ticket ticket);
+
     Boolean hasAccess(Long ticketId, Long userId, Role role, QueryMetadata queryMetadata);
 }

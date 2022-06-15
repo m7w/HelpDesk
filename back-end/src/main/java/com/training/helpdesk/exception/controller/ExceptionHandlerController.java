@@ -5,6 +5,8 @@ import java.util.Map;
 
 import javax.validation.ConstraintViolationException;
 
+import com.training.helpdesk.mail.exception.MailException;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -55,7 +57,7 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
     }
 
-    @ExceptionHandler(value = IllegalArgumentException.class)
+    @ExceptionHandler(value = { IllegalArgumentException.class, MailException.class })
     public ResponseEntity<Object> handleIllegalArgument(IllegalArgumentException e, WebRequest request) {
 
         Map<String, Object> body = new LinkedHashMap<>();
