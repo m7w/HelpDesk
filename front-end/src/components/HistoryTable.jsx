@@ -19,12 +19,6 @@ function HistoryTable(props) {
   const [tableBtnText, setTableBtnText] = useState("Show All");
   const [numRecords, setNumRecords] = useState(5);
 
-  const getTimestamp = (date) => {
-    const options = {dateStyle: "medium", timeStyle: "medium", hourCycle: "h24"};
-    const str = new Date(date).toLocaleString("en", options);
-    return str;
-  };
-
   const handleTableBtnClick = () => {
     if (tableBtnText === "Show All") {
       setTableBtnText("Hide");
@@ -59,7 +53,7 @@ function HistoryTable(props) {
             {history.slice(0, numRecords).map((item, index) => {
               return (
                 <TableRow key={index}>
-                  <TableCell align="center">{getTimestamp(item.date)}</TableCell>
+                  <TableCell align="center">{new Date(item.date + 'Z').toLocaleString()}</TableCell>
                   <TableCell align="center">{item.user}</TableCell>
                   <TableCell align="center">{item.action}</TableCell>
                   <TableCell align="left">{item.description}</TableCell>

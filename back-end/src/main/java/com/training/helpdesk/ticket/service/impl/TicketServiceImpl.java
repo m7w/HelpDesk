@@ -64,31 +64,16 @@ public class TicketServiceImpl implements TicketService {
 
 	@Override
     @Transactional
-	public void update(TicketDto ticketDto) {
+	public void update(Long id, TicketDto ticketDto) {
         Ticket ticket = ticketConverter.toEntity(ticketDto);
 
-        State oldState = ticketRepository.findById(ticket.getId())
-                .orElseThrow(() -> new IllegalArgumentException("Ticket with id=" + ticket.getId() + " not found"))
+        State oldState = ticketRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Ticket with id=" + id + " not found"))
             .getState();
 
+        ticket.setId(id);
         ticketRepository.update(ticket);
         mailService.notify(ticket, oldState);
-/*
- *        Ticket updatedTicket = ticketRepository.findById(ticket.getId())
- *            .orElseThrow(() -> new IllegalArgumentException("Ticket with id=" + ticket.getId() + " not found"));
- *
- *        updatedTicket.setName(ticket.getName());
- *        updatedTicket.setCategory(ticket.getCategory());
- *        updatedTicket.setDescription(ticket.getDescription());
- *        updatedTicket.setUrgency(ticket.getUrgency());
- *        updatedTicket.setDesiredResolutionDate(ticket.getDesiredResolutionDate());
- *        if (updatedTicket.getState() == State.NEW && ticket.getState() == State.DECLINED) {
- *            mailService.sendMail("Ticket was declined", new MailDetails(updatedTicket.getOwner(), id));
- *        }
- *        updatedTicket.setState(ticket.getState());
- *        updatedTicket.setApprover(ticket.getApprover());
- *        updatedTicket.setAssignee(ticket.getAssignee());
- */
 	}
 
 	@Override

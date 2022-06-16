@@ -267,6 +267,7 @@ class TicketCreationPage extends React.Component {
               saveHistory(ticketId, "Ticket status is changed", 
                 "Ticket status is changed from \"Draft\" to \"New\"");
             }
+            this.props.history.goBack();
           }
         });
     } else {

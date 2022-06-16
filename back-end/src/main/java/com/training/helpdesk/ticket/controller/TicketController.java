@@ -71,7 +71,7 @@ public class TicketController {
     public ResponseEntity<Void> update(@PathVariable("id") Long id, 
             @Valid @RequestBody TicketDto ticketDto) {
 
-        ticketService.update(ticketDto);
+        ticketService.update(id, ticketDto);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
