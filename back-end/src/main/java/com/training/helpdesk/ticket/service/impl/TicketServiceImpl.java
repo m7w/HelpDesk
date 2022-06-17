@@ -50,7 +50,7 @@ public class TicketServiceImpl implements TicketService {
         Long id = getUserId(auth);
         Page<Ticket> page = ticketRepository.findAllByUser(id, role, queryMetadata);
 
-        return ticketConverter.toSmallDto(page);
+        return ticketConverter.toSmallDto(id, role, page);
     }
     
 	@Override

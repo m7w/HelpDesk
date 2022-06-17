@@ -30,11 +30,11 @@ import lombok.RequiredArgsConstructor;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserDetailsService userDetailsService;
-    private final JwtUtils jwtTokenProvider;
+    private final JwtUtils jwtUtils;
 
     @Bean
     JwtRequestFilter jwtRequestFilter() {
-        return new JwtRequestFilter(userDetailsService, jwtTokenProvider);
+        return new JwtRequestFilter(userDetailsService, jwtUtils);
     }
 
     @Bean

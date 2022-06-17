@@ -2,15 +2,14 @@ package com.training.helpdesk.ticket.dto;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.EnumSet;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.training.helpdesk.user.domain.Role;
+import com.training.helpdesk.ticket.domain.Action;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
-@AllArgsConstructor
 @Builder
 @Getter
 public class TicketSmallDto implements Serializable {
@@ -24,7 +23,6 @@ public class TicketSmallDto implements Serializable {
     private final LocalDate resolutionDate;
     private final String urgency;
     private final String status;
-    private final Long ownerId;
-    private final Role ownerRole;
+    private final EnumSet<Action> actions;
 }
 

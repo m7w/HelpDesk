@@ -16,7 +16,7 @@ import {
 import { Link } from "react-router-dom";
 import { withRouter } from "react-router";
 import { TICKETS_TABLE_COLUMNS } from "../constants/tablesColumns";
-import { ACTIONS, STATUSES } from "../constants/inputsValues";
+import { STATUSES } from "../constants/inputsValues";
 import DropDown from "./DropDown";
 import SplitButton from "./SplitButton";
 import TablePaginationActions from "./TablePaginationActions";
@@ -58,34 +58,6 @@ class TicketsTable extends React.Component {
   handleSelectFilterPattern = event => {
     this.setState({ page: 0, searchPattern: event.target.value });
     this.props.searchCallback(this.state.searchColumn, event.target.value);
-  };
-
-  generateActions = (ticket) => {
-    const { status, ownerId, ownerRole } = ticket;
-    const { currentUser } = this.state;
-    if (currentUser.role === "ROLE_EMPLOYEE" && (status === "Draft" || status === "Declined")) {
-      return [ACTIONS[1], ACTIONS[6]];
-    }
-
-    if (currentUser.role === "ROLE_MANAGER") {
-      if (currentUser.id === ownerId && (status === "Draft" || status === "Declined")) {
-        return [ACTIONS[1], ACTIONS[6]];
-      }
-      if (ownerRole === "ROLE_EMPLOYEE" && status === "New") {
-        return [...ACTIONS.slice(2, 4), ACTIONS[6]];
-      }
-    }
-
-    if (currentUser.role === "ROLE_ENGINEER") {
-      if (status === "Approved") {
-        return [ACTIONS[4], ACTIONS[6]];
-      }
-      if (status ==="In Progress") {
-        return [ACTIONS[5]];
-      }
-    }
-
-    return []
   };
 
   handleSelectAction = (ticket) => (action) => {
@@ -140,7 +112,6 @@ class TicketsTable extends React.Component {
       handleSelectFilter,
       handleSelectFilterPattern,
       handleSelectAction,
-      generateActions,
     } = this;
 
     const { 
@@ -223,15 +194,15 @@ class TicketsTable extends React.Component {
               </TableRow>
             </TableHead>
             <TableBody>
-              {tickets.map((row, index) => {
+              {tickets.map((ticket, index) => {
                   return (
                     <TableRow hover role="checkbox" key={index}>
                       {TICKETS_TABLE_COLUMNS.map((column) => {
-                        const value = row[column.id];
+                        const value = ticket[column.id];
                         if (column.id === "name") {
                           return (
                             <TableCell key={column.id}>
-                              <Link to={`${url}/${row.id}`}>{value ? value : "......."}</Link>
+                              <Link to={`${url}/${ticket.id}`}>{value ? value : "......."}</Link>
                             </TableCell>
                           );
                         }
@@ -247,8 +218,8 @@ class TicketsTable extends React.Component {
                             <TableCell align="center" key={column.id}>
                               <SplitButton
                                 label="Action"
-                                options={generateActions(row)}
-                                onSelect={handleSelectAction(row)}
+                                options={ticket.actions}
+                                onSelect={handleSelectAction(ticket)}
                                />
                             </TableCell>
                           );

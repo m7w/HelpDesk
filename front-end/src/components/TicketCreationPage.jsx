@@ -31,9 +31,9 @@ class TicketCreationPage extends React.Component {
       ticketId: 0,
       nameValue: "",
       resolutionDateValue: new Date(),
-      urgencyValue: 0, //Critical
+      urgencyValue: "", //Critical
       statusValue: 1,  //New
-      categoryValue: 4,//Products & services
+      categoryValue: "",//Products & services
       descriptionValue: "",
       commentValue: "",
       attachmentValue: [],
@@ -44,22 +44,24 @@ class TicketCreationPage extends React.Component {
       URGENCY_OPTIONS: [],
       currentUser: JSON.parse(localStorage.getItem("user")),
     };
-
-    categoryService.getCategories()
-      .then((response) => {
-        this.setState({CATEGORIES_OPTIONS: response.data});
-      });
-
-    ticketService.getUrgencies()
-      .then((response) => {
-        this.setState({URGENCY_OPTIONS: response.data});
-      })
   }
 
   componentDidMount() {
     // set request for getting ticket in draft state
     const ticketFromUrl = this.props.location.pathname.split("/");
     const ticketId = ticketFromUrl[ticketFromUrl.length - 1];
+
+    categoryService.getCategories()
+      .then((response) => {
+        this.setState({CATEGORIES_OPTIONS: response.data});
+        this.setState({categoryValue: 4});
+      });
+
+    ticketService.getUrgencies()
+      .then((response) => {
+        this.setState({URGENCY_OPTIONS: response.data});
+        this.setState({urgencyValue: 0});
+      })
 
     if (/^\d+$/.test(ticketId)) {
       ticketService.getTicket(ticketId)
@@ -407,6 +409,7 @@ class TicketCreationPage extends React.Component {
                   Category
                 </InputLabel>
                 <Select
+                  defaultValue=""
                   value={categoryValue}
                   label="Category"
                   onChange={this.handleCategoryChange}
@@ -415,10 +418,10 @@ class TicketCreationPage extends React.Component {
                     id: "category-label",
                   }}
                 >
-                  {CATEGORIES_OPTIONS.map((item) => {
+                  {CATEGORIES_OPTIONS.map((category) => {
                     return (
-                      <MenuItem value={item.id} key={item.id}>
-                        {item.name}
+                      <MenuItem value={category.id} key={category.id}>
+                        {category.name}
                       </MenuItem>
                     );
                   })}
@@ -431,6 +434,7 @@ class TicketCreationPage extends React.Component {
                   Urgency
                 </InputLabel>
                 <Select
+                  defaultValue=""
                   value={urgencyValue}
                   label="Urgency"
                   onChange={this.handleUrgencyChange}
@@ -440,10 +444,10 @@ class TicketCreationPage extends React.Component {
                     id: "urgency-label",
                   }}
                 >
-                  {Object.entries(URGENCY_OPTIONS).map((entry, index) => {
+                  {URGENCY_OPTIONS.map((urgency) => {
                     return (
-                      <MenuItem value={entry[0]} key={entry[0]}>
-                        {entry[1]}
+                      <MenuItem value={urgency.key} key={urgency.key}>
+                        {urgency.label}
                       </MenuItem>
                     );
                   })}

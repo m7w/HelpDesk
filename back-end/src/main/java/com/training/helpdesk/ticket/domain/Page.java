@@ -14,6 +14,6 @@ public class Page<T> implements Serializable {
 
     private static final long serialVersionUID = -2728884197328628939L;
 
-    Long count;
-    List<T> entities;
+    private Long count;
+    private List<T> entities;
 }

@@ -1,8 +1,6 @@
 package com.training.helpdesk.ticket.controller;
 
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.EnumSet;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
@@ -76,10 +74,8 @@ public class TicketController {
     }
 
     @GetMapping(value = "/urgencies", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Map<Integer, String>> getUrgencies() {
-        Map<Integer, String> urgencies = Stream.of(Urgency.values())
-            .collect(Collectors.toMap(Urgency::ordinal, Urgency::toString));
+    public ResponseEntity<EnumSet<Urgency>> getUrgencies() {
 
-        return ResponseEntity.ok(urgencies);
+        return ResponseEntity.ok(EnumSet.allOf(Urgency.class));
     }
 }
