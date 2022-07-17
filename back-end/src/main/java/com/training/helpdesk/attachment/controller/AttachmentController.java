@@ -2,9 +2,11 @@ package com.training.helpdesk.attachment.controller;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 import com.training.helpdesk.attachment.domain.Attachment;
 import com.training.helpdesk.attachment.dto.AttachmentDto;
+import com.training.helpdesk.attachment.exception.UnsupportedFileTypeException;
 import com.training.helpdesk.attachment.service.AttachmentService;
 
 import org.springframework.core.io.ByteArrayResource;
@@ -30,6 +32,12 @@ import lombok.AllArgsConstructor;
 public class AttachmentController {
 
     private static final String ATTACHMENT_FILENAME = "attachment; filename=";
+    private static final String FILETYPE_ERROR_MESSAGE = "The type of the attached file is not allowed. "
+        + "Please select a file of one of the following types: pdf, doc, docx, png, jpg, jpeg.";
+    private static final Set<String> ALLOWED_FILETYPES = Set.of("application/pdf", "application/msword", 
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document", 
+                  "image/png", "image/jpg", "image/jpeg");
+
 
     private final AttachmentService attachmentService;
 
@@ -54,10 +62,14 @@ public class AttachmentController {
 
         return ResponseEntity.ok(attachmentService.findByTicketId(ticketId));
     }
-
+    
     @PostMapping("/{ticketId}/attachments")
     public ResponseEntity<Long> upload(@PathVariable("ticketId") Long ticketId,
             @RequestParam("file") MultipartFile file) throws IOException {
+
+        if (!ALLOWED_FILETYPES.contains(file.getContentType())) {
+            throw new UnsupportedFileTypeException(FILETYPE_ERROR_MESSAGE);
+        }
 
         return ResponseEntity.status(HttpStatus.CREATED).body(attachmentService.save(ticketId, file));
     }

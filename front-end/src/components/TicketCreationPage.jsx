@@ -126,8 +126,8 @@ class TicketCreationPage extends React.Component {
     const file = event.target.files[0];
     if (!this.checkFileType(file.type)) {
       this.setState({
-        attachmentError: "The selected file type is not allowed. \
-        Please select a file of one of the following types: pdf, png, doc, docx, jpg, jpeg.",
+        attachmentError: "The type of the attached file is not allowed. \
+        Please select a file of one of the following types: pdf, doc, docx, png, jpg, jpeg.",
       });
     } else if (!this.checkFileSize(file.size)) {
       this.setState({
