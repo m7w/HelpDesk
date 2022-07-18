@@ -22,14 +22,14 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<User>> findAll() {
+    public ResponseEntity<List<User>> getAll() {
 
         List<User> users = userService.findAll();
         return ResponseEntity.ok(users);
     }
 
     @GetMapping(value = "/{id}", produces=MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<User> findById(@PathVariable("id") Long id) {
+    public ResponseEntity<User> getById(@PathVariable("id") Long id) {
 
         User user = userService.findById(id);
         return ResponseEntity.ok(user);
