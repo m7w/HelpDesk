@@ -13,8 +13,8 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "flex-end",
     width: "50%",
-    flexShrink: 0,
-    marginLeft: theme.spacing(2.5),
+    flexShrink: 1,
+    marginLeft: theme.spacing(1.0),
   },
 }));
 
@@ -51,13 +51,19 @@ function TablePaginationActions(props) {
   return (
     <div className={classes.root}>
       <IconButton
+        size="small"
         onClick={handleFirstPageButtonClick}
         disabled={page === 0}
         aria-label="first page"
       >
         {theme.direction === 'rtl' ? <LastPageIcon /> : <FirstPageIcon />}
       </IconButton>
-      <IconButton onClick={handleBackButtonClick} disabled={page === 0} aria-label="previous page">
+      <IconButton 
+        size="small"
+        onClick={handleBackButtonClick}
+        disabled={page === 0}
+        aria-label="previous page"
+      >
         {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
       </IconButton>
       <div style={{marginTop: "auto", marginBottom: "auto"}}>
@@ -66,11 +72,12 @@ function TablePaginationActions(props) {
       <DropDown
         style={{width: "400px"}}
         options={options}
-        selectedIndex={0}
+        selectedIndex={page}
         currentIndex={page}
         onSelect={handleSelectPage}
       />
       <IconButton
+        size="small"
         onClick={handleNextButtonClick}
         disabled={page >= Math.ceil(count / rowsPerPage) - 1}
         aria-label="next page"
@@ -78,6 +85,7 @@ function TablePaginationActions(props) {
         {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
       </IconButton>
       <IconButton
+        size="small"
         onClick={handleLastPageButtonClick}
         disabled={page >= Math.ceil(count / rowsPerPage) - 1}
         aria-label="last page"

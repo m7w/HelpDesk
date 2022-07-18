@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 import {
   Paper,
@@ -12,6 +12,7 @@ import {
   TextField,
   Tooltip,
   TableSortLabel,
+  useMediaQuery,
 } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import { withRouter } from "react-router";
@@ -23,45 +24,40 @@ import TablePaginationActions from "./TablePaginationActions";
 import ticketService from "../services/ticketService";
 import historyService from "../services/historyService";
 
-class TicketsTable extends React.Component {
-  constructor(props) {
-    super(props);
+function TicketsTable(props) {
 
-    this.state = {
-      page: 0,
-      rowsPerPage: 5,
-      searchColumn: "t.name",
-      searchPattern: "",
-      currentUser: JSON.parse(localStorage.getItem("user")), 
-    };
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [searchColumn, setSearchColumn] = useState("t.name");
+  const [searchPattern, setSearchPattern] = useState("");
+  const currentUser = JSON.parse(localStorage.getItem("user"));
+  const matches = useMediaQuery('(min-width:580px)');
 
-  }
-
-  handleChangePage = (event, page) => {
-    this.setState({ page: page });
-    this.props.paginationCallback(page, this.state.rowsPerPage);
-    console.log("handleChangePage");
+  const handleChangePage = (event, page) => {
+    setPage(page);
+    props.paginationCallback(page, rowsPerPage);
   };
 
-  handleChangeRowsPerPage = (event) => {
-    this.setState({ page: 0, rowsPerPage: event.target.value });
-    this.props.paginationCallback(0, event.target.value);
-    console.log("handleChangeRowsPerPage");
+  const handleChangeRowsPerPage = (event) => {
+    setPage(0);
+    setRowsPerPage(event.target.value);
+    props.paginationCallback(0, event.target.value);
   };
 
-  handleSelectFilter= (index) => {
+  const handleSelectFilter= (index) => {
     const column = TICKETS_TABLE_COLUMNS[index].db_name;
-    this.setState({ page: 0, searchColumn: column });
-    this.props.searchCallback(column, this.state.searchPattern);
+    setPage(0);
+    setSearchColumn(column);
+    props.searchCallback(column, searchPattern);
   };
 
-  handleSelectFilterPattern = event => {
-    this.setState({ page: 0, searchPattern: event.target.value });
-    this.props.searchCallback(this.state.searchColumn, event.target.value);
+  const handleSelectFilterPattern = event => {
+    setPage(0);
+    setSearchPattern(event.target.value);
+    props.searchCallback(searchColumn, event.target.value);
   };
 
-  handleSelectAction = (ticket) => (action) => {
-    const { currentUser } = this.state;
+  const handleSelectAction = (ticket) => (action) => {
     ticketService.getTicket(ticket.id)
       .then((response) => {
         if (response.status === 200) {
@@ -99,20 +95,11 @@ class TicketsTable extends React.Component {
                 historyService.postHistory(newTicket.id, history);
               }
 
-              this.props.selectActionCallback();
+              props.selectActionCallback();
             });
         }
       });
   };
-
-  render() {
-    const {
-      handleChangePage,
-      handleChangeRowsPerPage,
-      handleSelectFilter,
-      handleSelectFilterPattern,
-      handleSelectAction,
-    } = this;
 
     const { 
       searchErrorMessage, 
@@ -121,10 +108,9 @@ class TicketsTable extends React.Component {
       orderBy, 
       order, 
       ticketsCount 
-    } = this.props;
+    } = props;
 
-    const { page, rowsPerPage } = this.state;
-    const { url } = this.props.match;
+    const { url } = props.match;
 
     return (
       <Paper>
@@ -234,19 +220,19 @@ class TicketsTable extends React.Component {
           </Table>
         </TableContainer>
         <TablePagination
-          rowsPerPageOptions={[2, 5, 10, 25, { label: "All", value: ticketsCount}]}
+          rowsPerPageOptions={matches ? [2, 5, 10, 25, { label: "All", value: ticketsCount}] : []}
           component="div"
           count={ticketsCount}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
-          ActionsComponent={TablePaginationActions}
+          ActionsComponent={matches ? TablePaginationActions : undefined}
         />
       </Paper>
     );
   }
-}
+
 
 TicketsTable.propTypes = {
   searchCallback: PropTypes.func,
