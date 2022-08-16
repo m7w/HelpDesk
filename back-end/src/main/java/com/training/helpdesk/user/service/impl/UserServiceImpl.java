@@ -7,6 +7,7 @@ import com.training.helpdesk.user.domain.User;
 import com.training.helpdesk.user.repository.UserRepository;
 import com.training.helpdesk.user.service.UserService;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +27,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "usersCache")
     public User findById(Long id) {
         return userRepository.findById(id)
             .orElseThrow(() -> new IllegalArgumentException("User with id=" + id + " not found"));

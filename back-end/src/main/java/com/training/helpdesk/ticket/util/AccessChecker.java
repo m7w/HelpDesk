@@ -1,4 +1,4 @@
-package com.training.helpdesk.ticket;
+package com.training.helpdesk.ticket.util;
 
 import com.training.helpdesk.ticket.service.TicketService;
 
@@ -12,7 +12,11 @@ public class AccessChecker {
 
     private final TicketService ticketService;
 
-    public boolean check(Long id) {
-        return ticketService.hasAccess(id);
+    public boolean hasAccess(Long id) {
+        return ticketService.securityUserHasAccess(id);
+    }
+
+    public boolean isOwner(Long id) {
+        return ticketService.securityUserIsOwner(id);
     }
 }

@@ -24,13 +24,14 @@ public class FeedbackController {
     private final FeedbackService feedbackService;
 
     @GetMapping(value = "/{ticketId}/feedback", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("@accessChecker.hasAccess(#ticketId)")
     public ResponseEntity<FeedbackDto> getFeedback(@PathVariable("ticketId") Long ticketId) {
 
         return ResponseEntity.ok(feedbackService.findByTicketId(ticketId));
     }
 
     @PostMapping(value = "/{ticketId}/feedback")
-    @PreAuthorize("hasRole('ROLE_EMPLOYEE') or hasRole('ROLE_MANAGER')")
+    @PreAuthorize("@accessChecker.isOwner(#ticketId)")
     public ResponseEntity<Long> save(@PathVariable("ticketId") Long ticketId,
             @RequestBody FeedbackDto feedbackDto) {
 

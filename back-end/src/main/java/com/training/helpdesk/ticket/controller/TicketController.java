@@ -52,7 +52,7 @@ public class TicketController {
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("@accessChecker.check(#id)")
+    @PreAuthorize("@accessChecker.hasAccess(#id)")
     public ResponseEntity<TicketDto> getTicketById(@PathVariable("id") Long id) {
         
         return ResponseEntity.ok(ticketService.findById(id));
@@ -66,6 +66,7 @@ public class TicketController {
     }
 
     @PutMapping(value = "/{id}")
+    @PreAuthorize("@accessChecker.hasAccess(#id)")
     public ResponseEntity<Void> update(@PathVariable("id") Long id, 
             @Valid @RequestBody TicketDto ticketDto) {
 

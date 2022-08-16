@@ -15,6 +15,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -42,6 +43,7 @@ public class AttachmentController {
     private final AttachmentService attachmentService;
 
     @GetMapping(value = "/{ticketId}/attachments/{id}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    @PreAuthorize("@accessChecker.hasAccess(#ticketId)")
     public ResponseEntity<Resource> getById(@PathVariable("ticketId") Long ticketId,
             @PathVariable("id") Long id) {
 
@@ -58,12 +60,14 @@ public class AttachmentController {
     }
 
     @GetMapping(value = "/{ticketId}/attachments", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("@accessChecker.hasAccess(#ticketId)")
     public ResponseEntity<List<AttachmentDto>> getByTicketId(@PathVariable("ticketId") Long ticketId) {
 
         return ResponseEntity.ok(attachmentService.findByTicketId(ticketId));
     }
     
     @PostMapping("/{ticketId}/attachments")
+    @PreAuthorize("@accessChecker.isOwner(#ticketId)")
     public ResponseEntity<Long> upload(@PathVariable("ticketId") Long ticketId,
             @RequestParam("file") MultipartFile file) throws IOException {
 
@@ -75,6 +79,7 @@ public class AttachmentController {
     }
 
     @DeleteMapping("/{ticketId}/attachments/{id}")
+    @PreAuthorize("@accessChecker.isOwner(#ticketId)")
     public ResponseEntity<Void> delete(@PathVariable("ticketId") Long ticketId, @PathVariable("id") Long id) {
 
         attachmentService.delete(id);

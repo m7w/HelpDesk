@@ -16,6 +16,7 @@ import com.training.helpdesk.ticket.repository.TicketRepository;
 import com.training.helpdesk.ticket.service.TicketService;
 import com.training.helpdesk.user.domain.Role;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -77,13 +78,21 @@ public class TicketServiceImpl implements TicketService {
 	}
 
 	@Override
-	public Boolean hasAccess(Long id) {
+    @Transactional(readOnly = true)
+    @Cacheable(value = "accessCache")
+	public Boolean securityUserHasAccess(Long id) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         Role role = getUserRoles(auth).get(0);
         Long userId = getUserId(auth);
 
-        return ticketRepository.hasAccess(id, userId, role, new QueryMetadata());
+        return ticketRepository.securityUserHasAccess(id, userId, role, new QueryMetadata());
 	}
+
+    @Override
+    @Transactional(readOnly = true)
+    public Boolean securityUserIsOwner(Long id) {
+        return findById(id).getOwnerId() == getUserId(SecurityContextHolder.getContext().getAuthentication());
+    }
 
     private List<Role> getUserRoles(Authentication auth) {
         return auth.getAuthorities().stream()

@@ -15,5 +15,7 @@ public interface TicketService {
 
     void update(Long id, TicketDto ticketDto);
 
-    Boolean hasAccess(Long id);
+    Boolean securityUserHasAccess(Long id);
+
+    Boolean securityUserIsOwner(Long id);
 }
