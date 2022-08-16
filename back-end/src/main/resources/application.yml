@@ -62,6 +62,9 @@ jwt:
   secret: AllYourBaseAreBelongToUsNoException
   validity: 86400000
 
+app:
+  frontend-endpoint: http://localhost:4444
+
 ---
 spring:
   config:

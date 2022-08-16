@@ -5,6 +5,7 @@ import java.util.Collections;
 import com.training.helpdesk.security.JwtRequestFilter;
 import com.training.helpdesk.security.util.JwtUtils;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -31,6 +32,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserDetailsService userDetailsService;
     private final JwtUtils jwtUtils;
+
+    @Value("${app.frontend-endpoint}")
+    private String allowedOrigin;
 
     @Bean
     JwtRequestFilter jwtRequestFilter() {
@@ -63,7 +67,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .cors().configurationSource((CorsConfigurationSource) request -> {
                 CorsConfiguration config = new CorsConfiguration();
                 config.setAllowCredentials(true);
-                config.setAllowedOrigins(Collections.singletonList("http://localhost:4444"));
+                config.setAllowedOrigins(Collections.singletonList(allowedOrigin));
                 config.setAllowedMethods(Collections.singletonList("*"));
                 config.setAllowedHeaders(Collections.singletonList("*"));
                 config.setExposedHeaders(Collections.singletonList("Authorization"));

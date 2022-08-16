@@ -9,8 +9,10 @@
           <div th:object="${mailDetails}">
             <h2>Dear Users,</h2>
             <p>Ticket 
-            <a th:href="@{http://localhost:4444/main-page/{id}(id=*{ticketId})}"> #<span th:text="*{ticketId}"></span> </a> 
-               was cancelled by the Engineer.
+            <a th:href="${#ctx.getVariable('host')} + @{~/main-page/{id}(id=*{ticketId})}">
+              #<span th:text="*{ticketId}"></span>
+            </a> 
+              was cancelled by the Engineer.
             </p> 
           </div>
         </div>

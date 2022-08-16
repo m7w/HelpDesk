@@ -9,8 +9,9 @@
           <div th:object="${mailDetails}">
             <h2>Dear <span th:text="*{user.firstName}"></span> <span th:text="*{user.lastName}"></span>,</h2>
             <p>The feedback was provided on the ticket 
-            <a th:href="@{http://localhost:4444/main-page/{id}(id=*{ticketId})}"> #<span th:text="*{ticketId}"></span> </a> 
-               .
+            <a th:href="${#ctx.getVariable('host')} + @{~/main-page/{id}(id=*{ticketId})}">
+              #<span th:text="*{ticketId}"></span>
+            </a>.
             </p> 
           </div>
         </div>

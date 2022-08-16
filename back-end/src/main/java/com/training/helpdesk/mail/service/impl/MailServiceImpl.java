@@ -13,8 +13,7 @@ import com.training.helpdesk.user.domain.Role;
 import com.training.helpdesk.user.domain.User;
 import com.training.helpdesk.user.service.UserService;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -22,12 +21,14 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MailServiceImpl implements MailService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MailService.class);
+    private static final String FRONTEND_HOST = "host";
     private static final String EMAIL_TEMPLATE = "mail/template";
     private static final String MAIL_DETAILS = "mailDetails";
     private static final String ENCODING = "UTF-8";
@@ -35,6 +36,9 @@ public class MailServiceImpl implements MailService {
     private final JavaMailSender mailSender;
     private final TemplateEngine htmlTemplateEngine;
     private final UserService userService;
+
+    @Value("${app.frontend-endpoint}")
+    private String frontendHost;
 
     @Override
     public void notify(Ticket ticket, State oldState) {
@@ -66,6 +70,7 @@ public class MailServiceImpl implements MailService {
         
         final Context ctx = new Context();
         ctx.setVariable(MAIL_DETAILS, mailDetails);
+        ctx.setVariable(FRONTEND_HOST, frontendHost);
 
         final MimeMessage mimeMessage = mailSender.createMimeMessage();
         final MimeMessageHelper message = new MimeMessageHelper(mimeMessage, ENCODING);
@@ -78,7 +83,7 @@ public class MailServiceImpl implements MailService {
 
             mailSender.send(mimeMessage);
         } catch (MessagingException e) {
-            LOGGER.error("Error sending email to " + mailDetails.getUser().getEmail() + " " + e.getMessage());
+            log.error("Error sending email to " + mailDetails.getUser().getEmail() + " " + e.getMessage());
         }
     }
 }
