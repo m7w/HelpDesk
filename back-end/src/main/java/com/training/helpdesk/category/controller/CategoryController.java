@@ -21,7 +21,7 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<Category>> findAll() {
+    public ResponseEntity<List<Category>> getAll() {
 
         List<Category> categories = categoryService.findAll();
         return ResponseEntity.ok(categories);

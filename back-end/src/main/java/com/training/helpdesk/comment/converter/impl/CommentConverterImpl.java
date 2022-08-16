@@ -28,6 +28,7 @@ public class CommentConverterImpl implements CommentConverter {
         commentDto.setUser(comment.getUser().getFirstName() + " " + comment.getUser().getLastName());
         commentDto.setText(comment.getText());
         commentDto.setDate(comment.getDate());
+        commentDto.setTicketId(comment.getTicket().getId());
 		return commentDto;
 	}
 

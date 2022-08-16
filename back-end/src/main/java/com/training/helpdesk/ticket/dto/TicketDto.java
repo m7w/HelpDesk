@@ -13,6 +13,7 @@ import org.hibernate.validator.constraints.Length;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -20,6 +21,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Getter
+@EqualsAndHashCode
 public class TicketDto implements Serializable {
 
     private static final long serialVersionUID = 4702833855743470890L;

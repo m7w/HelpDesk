@@ -26,6 +26,7 @@ public class HistoryConverterImpl implements HistoryConverter {
         historyDto.setTicketId(history.getTicket().getId());
         historyDto.setDate(history.getDate());
         historyDto.setUser(history.getUser().getFirstName() + " " + history.getUser().getLastName());
+        historyDto.setUserId(history.getUser().getId());
         historyDto.setAction(history.getAction());
         historyDto.setDescription(history.getDescription());
 
