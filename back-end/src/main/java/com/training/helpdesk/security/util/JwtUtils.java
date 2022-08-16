@@ -1,7 +1,9 @@
-package com.training.helpdesk.security;
+package com.training.helpdesk.security.util;
 
 import java.util.Date;
 import java.util.stream.Collectors;
+
+import com.training.helpdesk.security.SecurityUser;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -3,7 +3,7 @@ package com.training.helpdesk.config;
 import java.util.Collections;
 
 import com.training.helpdesk.security.JwtRequestFilter;
-import com.training.helpdesk.security.JwtUtils;
+import com.training.helpdesk.security.util.JwtUtils;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

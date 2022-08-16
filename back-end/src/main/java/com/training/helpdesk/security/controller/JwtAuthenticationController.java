@@ -2,8 +2,8 @@ package com.training.helpdesk.security.controller;
 
 import javax.validation.Valid;
 
-import com.training.helpdesk.security.JwtUtils;
 import com.training.helpdesk.security.dto.UserCredentialsDto;
+import com.training.helpdesk.security.util.JwtUtils;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
