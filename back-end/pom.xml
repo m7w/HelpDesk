@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.training</groupId>
 	<artifactId>helpdesk</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<name>helpdesk</name>
 	<description>Help Desk</description>
 	<properties>
