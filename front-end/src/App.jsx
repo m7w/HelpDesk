@@ -15,8 +15,9 @@ import { apiConfigure } from "./services/apiService.js";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
-  const [isAuthorized, setAuth] = useState(false);
-  const [user, setUser] = useState();
+
+  const [user, setUser] = useState(localStorage.getItem("user"));
+  const [isAuthorized, setAuth] = useState(user === null ? false : true);
 
   apiConfigure("http://localhost:8080/helpdesk");
 
@@ -27,7 +28,8 @@ function App() {
           {isAuthorized ? 
             <Redirect to="/main-page" /> 
             : 
-            <LoginPage authCallback={setAuth} userCallback={setUser} />}
+            <LoginPage authCallback={setAuth} userCallback={setUser} />
+          }
         </Route>
           {isAuthorized ?
             <>
@@ -46,8 +48,8 @@ function App() {
                 component={TicketCreationPageWithRouter}
               />
             </>
-              :
-              <LoginPage authCallback={setAuth} userCallback={setUser} />
+            :
+            <LoginPage authCallback={setAuth} userCallback={setUser} />
           }
       </Switch>
     </Router>

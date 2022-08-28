@@ -65,24 +65,16 @@ function FeedbackPage(props) {
       return;
     }
     const user = JSON.parse(localStorage.getItem("user"));
-    //ticketService.getTicket(id)
-      //.then((response) => {
-        //if (response.status === 200) {
-          //const ticket = response.data;
-          //if (ticket.ownerId === user.id && ticket.status === "Done") {
-            const feedback = {
-              userId: user.id,
-              ticketId: id,
-              rate: rateValue,
-              date: new Date(),
-              text: commentValue,
-            }
-            feedbackService.postFeedback(id, feedback)
+    const feedback = {
+      userId: user.id,
+      ticketId: id,
+      rate: rateValue,
+      date: new Date(),
+      text: commentValue,
+    }
+    feedbackService.postFeedback(id, feedback)
       .then((response) => {
-          //}
-        //}
-      //});
-    props.history.goBack()
+        props.history.goBack()
       });
   };
 
@@ -124,7 +116,7 @@ function FeedbackPage(props) {
           <TextField
             label="Comment"
             multiline
-            rows={7}
+            minRows={7}
             variant="outlined"
             value={commentValue}
             className="creation-text-field creation-text-field_width680"

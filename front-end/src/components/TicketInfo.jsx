@@ -441,8 +441,6 @@ class TicketInfo extends React.Component {
               <div className="ticket-data-container__button-section">
                 <ButtonGroup variant="contained" color="primary">
                   <Button
-                    //component={Link}
-                    //to="/main-page"
                     onClick={handleSubmitTicket}
                   >
                     Submit
@@ -456,8 +454,6 @@ class TicketInfo extends React.Component {
                     Edit
                   </Button>
                   <Button
-                    //component={Link}
-                    //to="/main-page"
                     onClick={handleCancelTicket}
                   >
                     Cancel
@@ -490,7 +486,7 @@ class TicketInfo extends React.Component {
                 <TextField
                   label="Enter a comment"
                   multiline
-                  rows={4}
+                  minRows={4}
                   value={commentValue}
                   variant="filled"
                   className="comment-text-field"

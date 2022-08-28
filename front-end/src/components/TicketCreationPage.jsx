@@ -512,7 +512,7 @@ class TicketCreationPage extends React.Component {
                 <TextField
                   label="Description"
                   multiline
-                  rows={4}
+                  minRows={4}
                   variant="outlined"
                   value={descriptionValue}
                   className="creation-text-field creation-text-field_width680"
@@ -532,7 +532,7 @@ class TicketCreationPage extends React.Component {
                 <TextField
                   label="Comment"
                   multiline
-                  rows={4}
+                  minRows={4}
                   variant="outlined"
                   value={commentValue}
                   className="creation-text-field creation-text-field_width680"

@@ -105,21 +105,26 @@ function MainPage(props) {
   }
     
   const { path } = props.match;
+  const user = JSON.parse(localStorage.getItem("user"));
 
   return (
     <>
       <Switch>
         <Route exact path={path}>
           <div className="buttons-container">
-            <Button
-              component={Link}
-              to="/create-ticket"
-              onClick={handleCreate}
-              variant="contained"
-              color="primary"
-            >
-              Create Ticket
-            </Button>
+            {user.role !== "ROLE_ENGINEER" ? 
+              <Button
+                component={Link}
+                to="/create-ticket"
+                onClick={handleCreate}
+                variant="contained"
+                color="primary"
+              >
+                Create Ticket
+              </Button>
+              : 
+              <span></span>
+            }
             <Button
               component={Link}
               to="/"
