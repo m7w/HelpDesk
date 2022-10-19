@@ -37,6 +37,9 @@ build/
 # JetBrains IDE
 .idea/
 
+# VSCode
+bin
+
 # Unit test reports
 TEST*.xml
 
