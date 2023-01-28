@@ -1,7 +1,9 @@
-version: '3.9'
+version: "3.9"
 
 services:
   helpdesk-backend:
+    env_file:
+      - .env.sensitive
     build: ./back-end
     image: helpdesk-backend
     container_name: backend
@@ -9,10 +11,10 @@ services:
       - 8080:8080
 
   helpdesk-frontend:
-    depends_on: 
+    depends_on:
       - helpdesk-backend
     build: ./front-end
     image: helpdesk-frontend
     container_name: frontend
     ports:
-      - 4444:4444
+      - 4444:80

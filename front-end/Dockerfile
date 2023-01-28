@@ -1,16 +1,13 @@
 # syntax=docker/dockerfile:1
 
-FROM node:18.7-alpine
-
+FROM node:18-alpine AS builder
 WORKDIR /app
-
 COPY package*.json ./
-RUN npm install
-
-RUN apk add --no-cache curl
-
 COPY . ./
+RUN npm install
+RUN npm run build
 
-EXPOSE 4444
-
-ENTRYPOINT ["npm", "start"]
+FROM joseluisq/static-web-server:2-alpine
+RUN adduser -S app
+USER app
+COPY --from=builder /app/dist/ /public/
