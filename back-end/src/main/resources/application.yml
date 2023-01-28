@@ -13,7 +13,7 @@ logging:
 
 spring:
   profiles:
-    active: dev
+    default: dev
   application:
     name: Help Desk
   sql:
@@ -45,13 +45,13 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: mk.test.only@gmail.com
-    password: rmysrxfgwrgymnks
+    username: ${SPRING_MAIL_USERNAME}
+    password: ${SPRING_MAIL_PASSWORD}
     protocol: smtp
     properties:
       mail:
         smtp:
-          from: mk.test.only@gmail.com
+          from: ${SPRING_MAIL_USERNAME}
           auth: true
           starttls.enable: true
           connectiontimeout: 5000
@@ -59,11 +59,11 @@ spring:
           writetimeout: 5000
 
 jwt:
-  secret: AllYourBaseAreBelongToUsNoException
+  secret: ${JWT_SECRET:AllYourBaseAreBelongToUsNoException}
   validity: 86400000
 
 app:
-  frontend-endpoint: http://localhost:4444
+  frontend-endpoint: ${APP_FRONTENDENDPOINT:#{'http://localhost:4444'}}
 
 ---
 spring:
