@@ -32,10 +32,8 @@ function TablePaginationActions(props) {
   };
 
   const handleSelectPage = (page) => {
-    console.log("in handleSelectPage");
-    console.log(page);
     onPageChange(0, page);
-  }
+  };
 
   const handleNextButtonClick = (event) => {
     onPageChange(event, page + 1);
@@ -45,8 +43,11 @@ function TablePaginationActions(props) {
     onPageChange(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
   };
 
-  const options = [...Array(Math.floor((count ? count - 1 : 0) / rowsPerPage) + 1).keys()]
-    .map(i => { return {id: i, label: i + 1}})
+  const options = [...Array(Math.floor((count ? count - 1 : 0) / rowsPerPage) + 1).keys()].map(
+    (i) => {
+      return { id: i, label: i + 1 };
+    }
+  );
 
   return (
     <div className={classes.root}>
@@ -56,21 +57,19 @@ function TablePaginationActions(props) {
         disabled={page === 0}
         aria-label="first page"
       >
-        {theme.direction === 'rtl' ? <LastPageIcon /> : <FirstPageIcon />}
+        {theme.direction === "rtl" ? <LastPageIcon /> : <FirstPageIcon />}
       </IconButton>
-      <IconButton 
+      <IconButton
         size="small"
         onClick={handleBackButtonClick}
         disabled={page === 0}
         aria-label="previous page"
       >
-        {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
+        {theme.direction === "rtl" ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
       </IconButton>
-      <div style={{marginTop: "auto", marginBottom: "auto"}}>
-        page:
-      </div>
+      <div style={{ marginTop: "auto", marginBottom: "auto" }}>page:</div>
       <DropDown
-        style={{width: "400px"}}
+        style={{ width: "400px" }}
         options={options}
         selectedIndex={page}
         currentIndex={page}
@@ -82,7 +81,7 @@ function TablePaginationActions(props) {
         disabled={page >= Math.ceil(count / rowsPerPage) - 1}
         aria-label="next page"
       >
-        {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
+        {theme.direction === "rtl" ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
       </IconButton>
       <IconButton
         size="small"
@@ -90,7 +89,7 @@ function TablePaginationActions(props) {
         disabled={page >= Math.ceil(count / rowsPerPage) - 1}
         aria-label="last page"
       >
-        {theme.direction === 'rtl' ? <FirstPageIcon /> : <LastPageIcon />}
+        {theme.direction === "rtl" ? <FirstPageIcon /> : <LastPageIcon />}
       </IconButton>
     </div>
   );

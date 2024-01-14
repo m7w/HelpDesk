@@ -16,7 +16,6 @@ function a11yProps(index) {
 }
 
 function MainPage(props) {
-
   const [tabValue, setTabValue] = useState(0);
   const [tickets, setTickets] = useState([]);
   const [page, setPage] = useState(0);
@@ -43,7 +42,8 @@ function MainPage(props) {
       searchString: debouncedSearchString,
     };
 
-    ticketService.getTickets(params)
+    ticketService
+      .getTickets(params)
       .then((response) => {
         setSearchError();
         setTicketsCount(response.data.count);
@@ -58,10 +58,18 @@ function MainPage(props) {
             break;
         }
       });
-  }, [tabValue, orderBy, order, page, rowsPerPage, searchColumn, debouncedSearchString, actionClicked]); 
+  }, [
+    tabValue,
+    orderBy,
+    order,
+    page,
+    rowsPerPage,
+    searchColumn,
+    debouncedSearchString,
+    actionClicked,
+  ]);
 
-  const handleCreate = () => {
-  };
+  const handleCreate = () => {};
 
   const history = useHistory();
 
@@ -74,13 +82,12 @@ function MainPage(props) {
   };
 
   const handleTabChange = (event, value) => {
-      setTabValue(value);
+    setTabValue(value);
   };
 
   const handlePagination = (page, rowsPerPage) => {
     setPage(page);
     setRowsPerPage(rowsPerPage);
-    console.log(`page: ${page}, rowsPerPage: ${rowsPerPage}`);
   };
 
   const handleSort = (newOrderBy) => {
@@ -102,8 +109,8 @@ function MainPage(props) {
 
   const handleSelectAction = () => {
     setActionClicked(actionClicked ? false : true);
-  }
-    
+  };
+
   const { path } = props.match;
   const user = JSON.parse(localStorage.getItem("user"));
 
@@ -112,7 +119,7 @@ function MainPage(props) {
       <Switch>
         <Route exact path={path}>
           <div className="buttons-container">
-            {user.role !== "ROLE_ENGINEER" ? 
+            {user.role !== "ROLE_ENGINEER" ? (
               <Button
                 component={Link}
                 to="/create-ticket"
@@ -122,9 +129,9 @@ function MainPage(props) {
               >
                 Create Ticket
               </Button>
-              : 
+            ) : (
               <span></span>
-            }
+            )}
             <Button
               component={Link}
               to="/"
@@ -137,18 +144,14 @@ function MainPage(props) {
           </div>
           <div className="table-container">
             <AppBar position="static">
-              <Tabs
-                variant="fullWidth"
-                onChange={handleTabChange}
-                value={tabValue}
-              >
+              <Tabs variant="fullWidth" onChange={handleTabChange} value={tabValue}>
                 <Tab label="All tickets" {...a11yProps(0)} />
                 <Tab label="My tickets" {...a11yProps(1)} />
               </Tabs>
               <TabPanel value={tabValue} index={0}>
                 <TicketsTable
                   searchCallback={handleSearchTicket}
-                  searchErrorMessage={searchError} 
+                  searchErrorMessage={searchError}
                   tickets={tickets}
                   sortCallback={handleSort}
                   orderBy={orderBy}
@@ -174,7 +177,7 @@ function MainPage(props) {
           </div>
         </Route>
         <Route path={`${path}/:ticketId`}>
-          <TicketInfoWithRouter onAction={handleSelectAction}/>
+          <TicketInfoWithRouter onAction={handleSelectAction} />
         </Route>
       </Switch>
     </>

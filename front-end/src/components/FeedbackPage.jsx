@@ -1,22 +1,15 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { withRouter } from "react-router";
-import {
-  Button,
-  Typography,
-  TextField,
-  makeStyles,
-  Box
-} from "@material-ui/core";
+import { Button, Typography, TextField, makeStyles, Box } from "@material-ui/core";
 import Rating from "@material-ui/lab/Rating";
 import ticketService from "../services/ticketService";
 import feedbackService from "../services/feedbackService";
 
 function FeedbackPage(props) {
-
   const [message, setMessage] = useState("Please, rate your satisfaction with the solution:");
   const [rateValue, setRateValue] = useState(0);
-  const [commentValue, setCommentValue] =useState("");
+  const [commentValue, setCommentValue] = useState("");
   const [hover, setHover] = useState(-1);
   const [rateError, setRateError] = useState("");
 
@@ -31,32 +24,34 @@ function FeedbackPage(props) {
   const useStyles = makeStyles({
     root: {
       width: 200,
-      display: 'flex',
-      alignItems: 'center',
+      display: "flex",
+      alignItems: "center",
     },
-  })
+  });
 
   const classes = useStyles();
 
   const handleValidateInput = (event) => {
-    event.target.value = event.target.value.replace(/[^ A-Za-z0-9~."(),:;<>@[\]!#$%&'*+-/=?^_`{|}]/g, "");
+    event.target.value = event.target.value.replace(
+      /[^ A-Za-z0-9~."(),:;<>@[\]!#$%&'*+-/=?^_`{|}]/g,
+      ""
+    );
   };
 
   const handleCommentChange = (event) => {
-      setCommentValue(event.target.value);
+    setCommentValue(event.target.value);
   };
 
   useEffect(() => {
     if (readOnly) {
-    feedbackService.getFeedback(id)
-      .then((response) => {
-        console.log("Hey FEEDBACK from FeedbackPage");
+      feedbackService.getFeedback(id).then((response) => {
         if (response.status === 200) {
           setMessage("Feedback");
           setRateValue(response.data.rate);
           setCommentValue(response.data.text);
         }
-      });}
+      });
+    }
   }, []);
 
   const handleSubmitFeedback = () => {
@@ -71,11 +66,10 @@ function FeedbackPage(props) {
       rate: rateValue,
       date: new Date(),
       text: commentValue,
-    }
-    feedbackService.postFeedback(id, feedback)
-      .then((response) => {
-        props.history.goBack()
-      });
+    };
+    feedbackService.postFeedback(id, feedback).then((response) => {
+      props.history.goBack();
+    });
   };
 
   const { id, name, readOnly } = props.location;
@@ -106,32 +100,32 @@ function FeedbackPage(props) {
                 setHover(newHover);
               }}
               sx={{
-                minWidth: 400
+                minWidth: 400,
               }}
             />
             {rateValue !== null && <Box ml={2}>{labels[hover !== -1 ? hover : rateValue]}</Box>}
           </div>
-          {rateError && (<span className="form__input-error"> {rateError} </span>)}
+          {rateError && <span className="form__input-error"> {rateError} </span>}
           <div className="feedback-element-container">
-          <TextField
-            label="Comment"
-            multiline
-            minRows={7}
-            variant="outlined"
-            value={commentValue}
-            className="creation-text-field creation-text-field_width680"
-            onChange={handleCommentChange}
-            inputProps={{
-              readOnly: readOnly
-            }}
-            onInput = {handleValidateInput}
-          />
+            <TextField
+              label="Comment"
+              multiline
+              minRows={7}
+              variant="outlined"
+              value={commentValue}
+              className="creation-text-field creation-text-field_width680"
+              onChange={handleCommentChange}
+              inputProps={{
+                readOnly: readOnly,
+              }}
+              onInput={handleValidateInput}
+            />
           </div>
-          {!readOnly &&
-          <Button onClick={handleSubmitFeedback} variant="contained">
-            Submit 
-          </Button>
-          }
+          {!readOnly && (
+            <Button onClick={handleSubmitFeedback} variant="contained">
+              Submit
+            </Button>
+          )}
         </div>
       </div>
     </div>

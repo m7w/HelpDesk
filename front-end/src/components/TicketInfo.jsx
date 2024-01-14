@@ -67,53 +67,47 @@ class TicketInfo extends React.Component {
   }
 
   componentDidMount() {
-    
     // get required ticket by id
 
     const { ticketId } = this.props.match.params;
-    ticketService.getTicket(ticketId)
-      .then((response) => {
-        this.setState({
-          ticketData: response.data,
-        });
-
-        this.handleFeedbackButton();
-
-        attachmentService.getAttachmentsInfo(ticketId)
-          .then((response) => {
-            this.setState({
-              ticketAttachments: response.data,
-            });
-          });
-
-        historyService.getHistory(ticketId)
-          .then((response) => {
-            this.setState({
-              ticketHistory: response.data,
-            });
-          });
-
-        commentService.getComments(ticketId)
-          .then((response) => {
-            this.setState({
-              ticketComments: response.data,
-            });
-          });
+    ticketService.getTicket(ticketId).then((response) => {
+      this.setState({
+        ticketData: response.data,
       });
+
+      this.handleFeedbackButton();
+
+      attachmentService.getAttachmentsInfo(ticketId).then((response) => {
+        this.setState({
+          ticketAttachments: response.data,
+        });
+      });
+
+      historyService.getHistory(ticketId).then((response) => {
+        this.setState({
+          ticketHistory: response.data,
+        });
+      });
+
+      commentService.getComments(ticketId).then((response) => {
+        this.setState({
+          ticketComments: response.data,
+        });
+      });
+    });
   }
 
   handleAttachmentDownload = (id, name) => {
-    attachmentService.getAttachment(this.state.ticketData.id, id)
-      .then((response) => {
-        const link = document.createElement('a');
-        const blob = new Blob([response.data], {type: "application/octet-stream"});
-        link.href = URL.createObjectURL(blob);
-        link.download = name;
-        document.body.appendChild(link);
-        link.click();
-        link.parentNode.removeChild(link);
-      });
-  }
+    attachmentService.getAttachment(this.state.ticketData.id, id).then((response) => {
+      const link = document.createElement("a");
+      const blob = new Blob([response.data], { type: "application/octet-stream" });
+      link.href = URL.createObjectURL(blob);
+      link.download = name;
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+    });
+  };
 
   handleTabChange = (event, value) => {
     this.setState({
@@ -122,7 +116,10 @@ class TicketInfo extends React.Component {
   };
 
   handleValidateInput = (event) => {
-    event.target.value = event.target.value.replace(/[^ A-Za-z0-9~."(),:;<>@[\]!#$%&'*+-/=?^_`{|}]/g, "");
+    event.target.value = event.target.value.replace(
+      /[^ A-Za-z0-9~."(),:;<>@[\]!#$%&'*+-/=?^_`{|}]/g,
+      ""
+    );
   };
 
   handleEnterComment = (event) => {
@@ -142,38 +139,32 @@ class TicketInfo extends React.Component {
         userId: this.state.currentUser.id,
         text: commentValue,
         date: new Date(),
-        ticketId: ticketId, 
-      }
+        ticketId: ticketId,
+      };
 
-      commentService.postComment(ticketId, comment)
-        .then((response) => {
-          if (response.status === 201) {
-            commentService.getComments(ticketId)
-              .then((response) => {
-                this.setState({
-                  ticketComments: response.data,
-                  commentValue: "",
-                });
-              });
-          }
-        });
+      commentService.postComment(ticketId, comment).then((response) => {
+        if (response.status === 201) {
+          commentService.getComments(ticketId).then((response) => {
+            this.setState({
+              ticketComments: response.data,
+              commentValue: "",
+            });
+          });
+        }
+      });
     }
   };
 
   handleSubmitTicket = () => {
     // set ticket status to 'submitted'
     this.handleAction(1);
-    console.log("SUBMIT ticket");
   };
 
-  handleEditTicket = () => {
-    console.log("EDIT ticket");
-  };
+  handleEditTicket = () => {};
 
   handleCancelTicket = () => {
     // set ticket status to 'canceled' status
     this.handleAction(6);
-    console.log("CANCEL ticket");
   };
 
   handleAction = (newStatus) => {
@@ -181,46 +172,49 @@ class TicketInfo extends React.Component {
     if (this.state.currentUser.role === "ROLE_MANAGER") {
       approverId = this.state.currentUser.id;
     }
-    this.setState(prevState => ({
-      ticketData: {
-        ...prevState.ticketData,
-        statusId: newStatus, 
-        approverId: approverId,
-      },
-    }), this.handleUpdateStatus);
+    this.setState(
+      (prevState) => ({
+        ticketData: {
+          ...prevState.ticketData,
+          statusId: newStatus,
+          approverId: approverId,
+        },
+      }),
+      this.handleUpdateStatus
+    );
   };
 
   handleUpdateStatus = () => {
     const { ticketData } = this.state;
-    ticketService.putTicket(ticketData.id, ticketData)
-      .then((response) => {
-        if (response.status === 204) {
-          let status = "";
-          if (ticketData.statusId === 1) {
-            status = "\"New\"";
-          } else if (ticketData.statusId === 6) {
-            status = "\"Canceled\"";
-          }
-
-          const history = {
-            ticketId: ticketData.id,
-            date: new Date(),
-            userId: this.state.currentUser.id,
-            action: "Ticket status is changed",
-            description: "Ticket status is changed from \"Draft\" to " + status,
-          };
-          historyService.postHistory(ticketData.id, history);
-
-          this.props.history.push("/main-page");
-          this.props.onAction();
+    ticketService.putTicket(ticketData.id, ticketData).then((response) => {
+      if (response.status === 204) {
+        let status = "";
+        if (ticketData.statusId === 1) {
+          status = '"New"';
+        } else if (ticketData.statusId === 6) {
+          status = '"Canceled"';
         }
-      });
+
+        const history = {
+          ticketId: ticketData.id,
+          date: new Date(),
+          userId: this.state.currentUser.id,
+          action: "Ticket status is changed",
+          description: 'Ticket status is changed from "Draft" to ' + status,
+        };
+        historyService.postHistory(ticketData.id, history);
+
+        this.props.history.push("/main-page");
+        this.props.onAction();
+      }
+    });
   };
 
   handleFeedbackButton = () => {
     const { id, ownerId, assigneeId, status } = this.state.ticketData;
     if (this.state.currentUser.id === ownerId && status === "Done") {
-      feedbackService.getFeedback(id)
+      feedbackService
+        .getFeedback(id)
         .then((response) => {
           if (response.status === 200) {
             this.setState({ feedbackBtnTitle: "View Feedback" });
@@ -233,14 +227,12 @@ class TicketInfo extends React.Component {
         });
     }
     if (this.state.currentUser.id === assigneeId && status === "Done") {
-      feedbackService.getFeedback(id)
-        .then((response) => {
-          if (response.status === 200) {
-            this.setState({ feedbackBtnTitle: "View Feedback" });
-          }
-        })
+      feedbackService.getFeedback(id).then((response) => {
+        if (response.status === 200) {
+          this.setState({ feedbackBtnTitle: "View Feedback" });
+        }
+      });
     }
-    console.log("FeedbackBtnTitle: " + this.state.feedbackBtnTitle);
   };
 
   render() {
@@ -258,12 +250,18 @@ class TicketInfo extends React.Component {
       description,
     } = this.state.ticketData;
 
-    const { commentValue, tabValue, ticketAttachments, ticketComments, ticketHistory, feedbackBtnTitle } = this.state;
+    const {
+      commentValue,
+      tabValue,
+      ticketAttachments,
+      ticketComments,
+      ticketHistory,
+      feedbackBtnTitle,
+    } = this.state;
 
     const { url } = this.props.match;
 
     const { handleCancelTicket, handleEditTicket, handleSubmitTicket } = this;
-
 
     return (
       <Switch>
@@ -276,19 +274,20 @@ class TicketInfo extends React.Component {
                 </Button>
               </div>
               <div className={"ticket-data-container__feedback-button"}>
-                {feedbackBtnTitle &&
-                <Button 
-                  variant="contained"
-                  component={Link} 
-                  to={{
-                    pathname: "/feedback", 
-                    id: id, 
-                    name: name, 
-                    readOnly: feedbackBtnTitle === "View Feedback"
-                  }}>
-                  {feedbackBtnTitle}
-                </Button>
-                }
+                {feedbackBtnTitle && (
+                  <Button
+                    variant="contained"
+                    component={Link}
+                    to={{
+                      pathname: "/feedback",
+                      id: id,
+                      name: name,
+                      readOnly: feedbackBtnTitle === "View Feedback",
+                    }}
+                  >
+                    {feedbackBtnTitle}
+                  </Button>
+                )}
               </div>
             </div>
             <div className="ticket-data-container__title">
@@ -403,20 +402,24 @@ class TicketInfo extends React.Component {
                       <TableCell>
                         <Typography align="left" variant="subtitle1">
                           <div className="info-section-attachment">
-                            {ticketAttachments.length > 0 ?
-                                ticketAttachments.map((attachment) => {
+                            {ticketAttachments.length > 0
+                              ? ticketAttachments.map((attachment) => {
                                   return (
                                     <Chip
                                       variant="outlined"
                                       size="small"
                                       label={attachment.name}
                                       key={attachment.id}
-                                      onClick={() => this.handleAttachmentDownload(attachment.id, attachment.name)}
+                                      onClick={() =>
+                                        this.handleAttachmentDownload(
+                                          attachment.id,
+                                          attachment.name
+                                        )
+                                      }
                                     />
-                                  )
+                                  );
                                 })
-                                :
-                                "Not assigned"}
+                              : "Not assigned"}
                           </div>
                         </Typography>
                       </TableCell>
@@ -440,24 +443,12 @@ class TicketInfo extends React.Component {
             {status.toLowerCase() === "draft" && (
               <div className="ticket-data-container__button-section">
                 <ButtonGroup variant="contained" color="primary">
-                  <Button
-                    onClick={handleSubmitTicket}
-                  >
-                    Submit
-                  </Button>
+                  <Button onClick={handleSubmitTicket}>Submit</Button>
 
-                  <Button
-                    component={Link}
-                    to={`/create-ticket/${id}`}
-                    onClick={handleEditTicket}
-                  >
+                  <Button component={Link} to={`/create-ticket/${id}`} onClick={handleEditTicket}>
                     Edit
                   </Button>
-                  <Button
-                    onClick={handleCancelTicket}
-                  >
-                    Cancel
-                  </Button>
+                  <Button onClick={handleCancelTicket}>Cancel</Button>
                 </ButtonGroup>
               </div>
             )}
@@ -494,14 +485,10 @@ class TicketInfo extends React.Component {
                   inputProps={{
                     maxLength: 500,
                   }}
-                  onInput = {this.handleValidateInput}
+                  onInput={this.handleValidateInput}
                 />
                 <div className="enter-comment-section__add-comment-button">
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={this.addComment}
-                  >
+                  <Button variant="contained" color="primary" onClick={this.addComment}>
                     Add Comment
                   </Button>
                 </div>
