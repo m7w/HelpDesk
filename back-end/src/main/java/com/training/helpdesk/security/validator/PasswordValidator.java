@@ -3,8 +3,8 @@ package com.training.helpdesk.security.validator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 public class PasswordValidator implements ConstraintValidator<PasswordConstraint, String> {
 
@@ -14,8 +14,7 @@ public class PasswordValidator implements ConstraintValidator<PasswordConstraint
     private static final Pattern PATTERN = Pattern.compile(PASSWORD_PATTERN);
 
     @Override
-    public void initialize(PasswordConstraint constraintAnnotation) {
-    }
+    public void initialize(PasswordConstraint constraintAnnotation) {}
 
     @Override
     public boolean isValid(String password, ConstraintValidatorContext ctx) {

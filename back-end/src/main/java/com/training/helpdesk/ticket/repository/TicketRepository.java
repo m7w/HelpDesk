@@ -16,5 +16,6 @@ public interface TicketRepository {
 
     Ticket update(Ticket ticket);
 
-    Boolean securityUserHasAccess(Long ticketId, Long userId, Role role, QueryMetadata queryMetadata);
+    Boolean securityUserHasAccess(
+            Long ticketId, Long userId, Role role, QueryMetadata queryMetadata);
 }

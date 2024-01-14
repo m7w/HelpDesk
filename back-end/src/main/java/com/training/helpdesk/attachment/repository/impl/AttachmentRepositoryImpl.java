@@ -3,13 +3,13 @@ package com.training.helpdesk.attachment.repository.impl;
 import java.util.List;
 import java.util.Optional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import org.springframework.stereotype.Repository;
 
 import com.training.helpdesk.attachment.domain.Attachment;
 import com.training.helpdesk.attachment.repository.AttachmentRepository;
 
-import org.springframework.stereotype.Repository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 @Repository
 public class AttachmentRepositoryImpl implements AttachmentRepository {

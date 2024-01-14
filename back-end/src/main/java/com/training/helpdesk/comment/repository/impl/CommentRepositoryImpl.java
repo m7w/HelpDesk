@@ -3,13 +3,13 @@ package com.training.helpdesk.comment.repository.impl;
 import java.util.List;
 import java.util.Optional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import org.springframework.stereotype.Repository;
 
 import com.training.helpdesk.comment.domain.Comment;
 import com.training.helpdesk.comment.repository.CommentRepository;
 
-import org.springframework.stereotype.Repository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 @Repository
 public class CommentRepositoryImpl implements CommentRepository {

@@ -3,8 +3,8 @@ package com.training.helpdesk.category.repository.impl;
 import java.util.List;
 import java.util.Optional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 import com.training.helpdesk.category.domain.Category;
 import com.training.helpdesk.category.repository.CategoryRepository;

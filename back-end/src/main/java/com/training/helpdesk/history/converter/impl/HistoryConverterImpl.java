@@ -3,16 +3,18 @@ package com.training.helpdesk.history.converter.impl;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.stereotype.Component;
+
 import com.training.helpdesk.history.converter.HistoryConverter;
 import com.training.helpdesk.history.domain.History;
 import com.training.helpdesk.history.dto.HistoryDto;
 import com.training.helpdesk.ticket.repository.TicketRepository;
 import com.training.helpdesk.user.service.UserService;
 
-import org.springframework.stereotype.Component;
-
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Component
 @AllArgsConstructor
 public class HistoryConverterImpl implements HistoryConverter {
@@ -43,7 +45,7 @@ public class HistoryConverterImpl implements HistoryConverter {
 	@Override
 	public History toEntity(HistoryDto historyDto) {
         History history = new History();
-        history.setTicket(ticketRepository.findById(historyDto.getTicketId())
+        history.setTicket(ticketRepository.getRefById(historyDto.getTicketId())
                 .orElseThrow(() -> new IllegalArgumentException("Ticket with id=" + historyDto.getTicketId() + " not found")));
         history.setDate(historyDto.getDate());
         history.setUser(userService.findById(historyDto.getUserId()));

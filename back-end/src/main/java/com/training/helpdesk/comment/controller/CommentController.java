@@ -2,7 +2,7 @@ package com.training.helpdesk.comment.controller;
 
 import java.util.List;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import com.training.helpdesk.comment.dto.CommentDto;
 import com.training.helpdesk.comment.service.CommentService;
@@ -36,8 +36,8 @@ public class CommentController {
 
     @PostMapping(value = "/{ticketId}/comments")
     @PreAuthorize("@accessChecker.hasAccess(#ticketId)")
-    public ResponseEntity<Long> save(@PathVariable("ticketId") Long ticketId,
-            @Valid @RequestBody CommentDto commentDto) {
+    public ResponseEntity<Long> save(
+            @PathVariable("ticketId") Long ticketId, @Valid @RequestBody CommentDto commentDto) {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(commentService.save(commentDto));
     }

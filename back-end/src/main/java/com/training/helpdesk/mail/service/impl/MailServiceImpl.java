@@ -2,8 +2,8 @@ package com.training.helpdesk.mail.service.impl;
 
 import java.util.List;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 
 import com.training.helpdesk.mail.MailDetails;
 import com.training.helpdesk.mail.service.MailService;

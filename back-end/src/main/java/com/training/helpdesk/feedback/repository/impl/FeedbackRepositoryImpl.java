@@ -2,8 +2,8 @@ package com.training.helpdesk.feedback.repository.impl;
 
 import java.util.Optional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 import com.training.helpdesk.feedback.domain.Feedback;
 import com.training.helpdesk.feedback.repository.FeedbackRepository;
@@ -20,7 +20,7 @@ public class FeedbackRepositoryImpl implements FeedbackRepository {
     private static final String ID = "id";
 
     @PersistenceContext
-    private final EntityManager entityManager;
+    private EntityManager entityManager;
 
     @Override
 	public Optional<Feedback> findByTicketId(Long id) {

@@ -29,12 +29,15 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     @Cacheable(value = "usersCache")
     public User findById(Long id) {
-        return userRepository.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("User with id=" + id + " not found"));
+        return userRepository
+                .findById(id)
+                .orElseThrow(
+                        () -> new IllegalArgumentException("User with id=" + id + " not found"));
     }
 
-	@Override
-	public List<User> findByRole(Role role) {
-		return userRepository.findByRole(role);
-	}
+    @Override
+    @Override
+    public List<User> findByRole(Role role) {
+        return userRepository.findByRole(role);
+    }
 }

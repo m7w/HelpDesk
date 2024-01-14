@@ -2,8 +2,8 @@ package com.training.helpdesk.ticket.controller;
 
 import java.util.EnumSet;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Pattern;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Pattern;
 
 import com.training.helpdesk.ticket.domain.Page;
 import com.training.helpdesk.ticket.domain.Urgency;

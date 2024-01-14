@@ -3,8 +3,8 @@ package com.training.helpdesk.user.repository.impl;
 import java.util.List;
 import java.util.Optional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 import com.training.helpdesk.user.domain.Role;
 import com.training.helpdesk.user.domain.User;
@@ -21,8 +21,7 @@ public class UserRepositoryImpl implements UserRepository {
     private static final String EMAIL = "email";
     private static final String ROLE = "role";
 
-    @PersistenceContext
-    private EntityManager entityManager;
+    @PersistenceContext private EntityManager entityManager;
 
     @Override
     public List<User> findAll() {
@@ -36,15 +35,18 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public Optional<User> findByEmail(String email) {
-        return entityManager.createQuery(FIND_BY_EMAIL, User.class)
-            .setParameter(EMAIL, email)
-            .getResultStream().findFirst();
+        return entityManager
+                .createQuery(FIND_BY_EMAIL, User.class)
+                .setParameter(EMAIL, email)
+                .getResultStream()
+                .findFirst();
     }
 
-	@Override
-	public List<User> findByRole(Role role) {
-        return entityManager.createQuery(FIND_BY_ROLE, User.class)
-            .setParameter(ROLE, role)
-            .getResultList();
-	}
+    @Override
+    public List<User> findByRole(Role role) {
+        return entityManager
+                .createQuery(FIND_BY_ROLE, User.class)
+                .setParameter(ROLE, role)
+                .getResultList();
+    }
 }

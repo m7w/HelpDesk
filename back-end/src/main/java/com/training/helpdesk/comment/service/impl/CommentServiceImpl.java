@@ -2,14 +2,14 @@ package com.training.helpdesk.comment.service.impl;
 
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.training.helpdesk.comment.converter.CommentConverter;
 import com.training.helpdesk.comment.domain.Comment;
 import com.training.helpdesk.comment.dto.CommentDto;
 import com.training.helpdesk.comment.repository.CommentRepository;
 import com.training.helpdesk.comment.service.CommentService;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import lombok.AllArgsConstructor;
 

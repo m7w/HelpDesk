@@ -3,8 +3,7 @@ package com.training.helpdesk.ticket.repository.impl;
 import java.util.List;
 import java.util.Optional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import org.springframework.stereotype.Repository;
 
 import com.training.helpdesk.ticket.domain.Page;
 import com.training.helpdesk.ticket.domain.Ticket;
@@ -13,7 +12,8 @@ import com.training.helpdesk.ticket.repository.TicketRepository;
 import com.training.helpdesk.ticket.util.QueryBuilder;
 import com.training.helpdesk.user.domain.Role;
 
-import org.springframework.stereotype.Repository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 @Repository
 public class TicketRepositoryImpl implements TicketRepository {

@@ -7,6 +7,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
 import com.training.helpdesk.category.domain.Category;
 import com.training.helpdesk.history.domain.History;
 import com.training.helpdesk.history.dto.HistoryDto;
@@ -17,12 +23,6 @@ import com.training.helpdesk.ticket.repository.TicketRepository;
 import com.training.helpdesk.user.domain.Role;
 import com.training.helpdesk.user.domain.User;
 import com.training.helpdesk.user.service.UserService;
-
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 public class HistoryConverterImplTest {
@@ -37,8 +37,8 @@ public class HistoryConverterImplTest {
     private static final Ticket TICKET = new Ticket(TICKET_ID, "Ticket1", "Ticket1 description",
             LocalDate.of(2022, 7, 10), LocalDate.of(2022, 8, 10), 
             USER, USER, State.NEW, CATEGORY, Urgency.AVERAGE, USER);
-    private static final History HISTORY = new History(HISTORY_ID, TICKET, LocalDateTime.parse("2022-07-18T15:30:15"), 
-            "Action", USER, "Description");
+    private static final History HISTORY = new History(HISTORY_ID, TICKET, 
+            LocalDateTime.parse("2022-07-18T15:30:15"), "Action", USER, "Description");
 
     @InjectMocks
     private HistoryConverterImpl historyConverter;

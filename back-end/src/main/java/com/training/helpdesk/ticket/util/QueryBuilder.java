@@ -9,35 +9,41 @@ import com.training.helpdesk.user.domain.Role;
 
 public final class QueryBuilder {
 
-    private static final String PLAIN_QUERY_SELECT = "from Ticket t join fetch t.owner join fetch t.category ";
+    private static final String PLAIN_QUERY_SELECT =
+            "from Ticket t join fetch t.owner join fetch t.category ";
 
-    private static final String COUNT_QUERY_SELECT = "select count(t.id) from Ticket t join t.owner ";
+    private static final String COUNT_QUERY_SELECT =
+            "select count(t.id) from Ticket t join t.owner ";
 
     private static final String FIND_ALL_EMPLOYEE_CLAUSE = " where t.owner.id = :id ";
 
-    private static final String FIND_ALL_MANAGER_CLAUSE = " where (t.owner.id = :id "
-        + " or (t.owner.role = 0 and t.state = 'NEW') "
-        + " or (t.approver.id = :id and t.state in ('APPROVED', 'DECLINED', 'IN_PROGRESS', 'DONE', 'CANCELED')))";
+    private static final String FIND_ALL_MANAGER_CLAUSE =
+            " where (t.owner.id = :id  or (t.owner.role = 0 and t.state = 'NEW')  or (t.approver.id"
+                    + " = :id and t.state in ('APPROVED', 'DECLINED', 'IN_PROGRESS', 'DONE',"
+                    + " 'CANCELED')))";
 
-    private static final String FIND_MY_MANAGER_CLAUSE = " where (t.owner.id = :id "
-        + " or (t.approver.id = :id and t.state = 'APPROVED'))";
+    private static final String FIND_MY_MANAGER_CLAUSE =
+            " where (t.owner.id = :id or (t.approver.id = :id and t.state = 'APPROVED'))";
 
-    private static final String FIND_ALL_ENGINEER_CLAUSE = " where (t.state = 'APPROVED' "
-        + " or (t.assignee.id = :id and t.state in ('IN_PROGRESS', 'DONE')))";
+    private static final String FIND_ALL_ENGINEER_CLAUSE =
+            " where (t.state = 'APPROVED' "
+                    + " or (t.assignee.id = :id and t.state in ('IN_PROGRESS', 'DONE')))";
 
     private static final String FIND_MY_ENGINEER_CLAUSE = " where t.assignee.id = :id ";
 
     private static final String TICKET_ID_CLAUSE = " and t.id = :ticketId ";
 
-    private QueryBuilder() {};
+    private QueryBuilder() {}
 
     public static String buildCheckAccessQuery(Role role, QueryMetadata qm) {
         return PLAIN_QUERY_SELECT + createWhereClause(role, qm) + TICKET_ID_CLAUSE;
     }
 
     public static String buildPlainQuery(Role role, QueryMetadata qm) {
-        return PLAIN_QUERY_SELECT + createWhereClause(role, qm) 
-            + createFilterClause(qm) + createOrderByClause(qm);
+        return PLAIN_QUERY_SELECT
+                + createWhereClause(role, qm)
+                + createFilterClause(qm)
+                + createOrderByClause(qm);
     }
 
     public static String buildCountQuery(Role role, QueryMetadata qm) {
@@ -70,15 +76,19 @@ public final class QueryBuilder {
 
             if ("t.urgency".equals(searchColumn)) {
                 List<Integer> ordinalsOfSubstring = Urgency.ofSubstring(searchString);
-                String urgencies = ordinalsOfSubstring.stream()
-                    .map(o -> o.toString())
-                    .collect(Collectors.joining(","));
+                String urgencies =
+                        ordinalsOfSubstring.stream()
+                                .map(o -> o.toString())
+                                .collect(Collectors.joining(","));
 
                 return " and t.urgency in (" + urgencies + ")";
             }
 
-            String escapedSearchPattern = searchString.replaceAll("([%_])", "\\\\$1").replace("'", "''");
-            return String.format(" and lower(%s) like lower('%%%s%%') ", searchColumn, escapedSearchPattern);
+            String escapedSearchPattern =
+                    searchString.replaceAll("([%_])", "\\\\$1").replace("'", "''");
+            return String.format(
+                    " and lower(str(%s)) like lower('%%%s%%') ",
+                    searchColumn, escapedSearchPattern);
         } else {
             return "";
         }

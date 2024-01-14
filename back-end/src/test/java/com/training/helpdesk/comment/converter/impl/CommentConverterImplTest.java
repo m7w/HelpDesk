@@ -7,6 +7,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
 import com.training.helpdesk.category.domain.Category;
 import com.training.helpdesk.comment.domain.Comment;
 import com.training.helpdesk.comment.dto.CommentDto;
@@ -17,12 +23,6 @@ import com.training.helpdesk.ticket.repository.TicketRepository;
 import com.training.helpdesk.user.domain.Role;
 import com.training.helpdesk.user.domain.User;
 import com.training.helpdesk.user.service.UserService;
-
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 public class CommentConverterImplTest {
@@ -55,7 +55,7 @@ public class CommentConverterImplTest {
         expected.setId(null);
 
         when(userService.findById(USER_ID)).thenReturn(USER);
-        when(ticketRepository.findById(TICKET_ID)).thenReturn(Optional.of(TICKET));
+        when(ticketRepository.getRefById(TICKET_ID)).thenReturn(Optional.of(TICKET));
 
         CommentDto dto = commentConverter.toDto(COMMENT);
 

@@ -3,16 +3,16 @@ package com.training.helpdesk.ticket.domain;
 import java.time.LocalDate;
 import java.util.Objects;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 import com.training.helpdesk.category.domain.Category;
 import com.training.helpdesk.user.domain.User;
@@ -68,38 +68,65 @@ public class Ticket {
 
     @Override
     public int hashCode() {
-        return Objects.hash(approver, assignee, category, createdOn, description,
-                desiredResolutionDate, id, name, owner, state, urgency);
+        return Objects.hash(
+                approver,
+                assignee,
+                category,
+                createdOn,
+                description,
+                desiredResolutionDate,
+                id,
+                name,
+                owner,
+                state,
+                urgency);
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (!(obj instanceof Ticket))
-            return false;
+        if (this == obj) return true;
+        if (!(obj instanceof Ticket)) return false;
         Ticket other = (Ticket) obj;
-        return Objects.equals(approver, other.approver) && Objects.equals(assignee, other.assignee)
-                && Objects.equals(category, other.category) && Objects.equals(createdOn, other.createdOn)
+        return Objects.equals(approver, other.approver)
+                && Objects.equals(assignee, other.assignee)
+                && Objects.equals(category, other.category)
+                && Objects.equals(createdOn, other.createdOn)
                 && Objects.equals(description, other.description)
                 && Objects.equals(desiredResolutionDate, other.desiredResolutionDate)
-                && Objects.equals(id, other.id) && Objects.equals(name, other.name)
-                && Objects.equals(owner, other.owner) && state == other.state 
+                && Objects.equals(id, other.id)
+                && Objects.equals(name, other.name)
+                && Objects.equals(owner, other.owner)
+                && state == other.state
                 && urgency == other.urgency;
     }
 
     @Override
     public String toString() {
-        return "Ticket [id=" + id 
-            + ", name=" + name 
-            + ", description=" + description 
-            + ", createdOn=" + createdOn 
-            + ", desiredResolutionDate=" + desiredResolutionDate
-            + ", assignee=" + assignee.getFirstName() + assignee.getLastName()
-            + ", owner=" + owner.getFirstName() + owner.getLastName() 
-            + ", state=" + state 
-            + ", category=" + category.getName()
-            + ", urgencyId=" + urgency
-            + ", approver=" + approver.getFirstName() + approver.getLastName() + "]";
+        return "Ticket [id="
+                + id
+                + ", name="
+                + name
+                + ", description="
+                + description
+                + ", createdOn="
+                + createdOn
+                + ", desiredResolutionDate="
+                + desiredResolutionDate
+                + ", assignee="
+                + assignee.getFirstName()
+                + assignee.getLastName()
+                + ", owner="
+                + owner.getFirstName()
+                + owner.getLastName()
+                + ", state="
+                + state
+                + ", category="
+                + category.getName()
+                + ", urgencyId="
+                + urgency
+                + ", approver="
+                + approver.getFirstName()
+                + approver.getLastName()
+                + "]";
     }
 }

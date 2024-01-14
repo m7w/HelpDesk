@@ -1,6 +1,6 @@
 package com.training.helpdesk.security.controller;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import com.training.helpdesk.security.dto.UserCredentialsDto;
 import com.training.helpdesk.security.util.JwtUtils;
