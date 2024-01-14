@@ -34,6 +34,11 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
+    public Optional<User> getRefById(Long id) {
+        return Optional.ofNullable(entityManager.getReference(User.class, id));
+    }
+
+    @Override
     public Optional<User> findByEmail(String email) {
         return entityManager
                 .createQuery(FIND_BY_EMAIL, User.class)

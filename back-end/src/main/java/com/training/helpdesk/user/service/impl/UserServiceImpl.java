@@ -36,6 +36,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User getRefById(Long id) {
+        return userRepository
+                .getRefById(id)
+                .orElseThrow(
+                        () -> new IllegalArgumentException("User with id=" + id + " not found"));
+    }
+
     @Override
     public List<User> findByRole(Role role) {
         return userRepository.findByRole(role);

@@ -11,5 +11,7 @@ public interface UserService {
 
     User findById(Long id);
 
+    User getRefById(Long id);
+
     List<User> findByRole(Role role);
 }

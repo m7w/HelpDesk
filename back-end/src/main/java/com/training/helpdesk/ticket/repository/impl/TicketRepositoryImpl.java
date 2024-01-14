@@ -34,6 +34,11 @@ public class TicketRepositoryImpl implements TicketRepository {
     }
 
     @Override
+    public Optional<Ticket> getRefById(Long id) {
+        return Optional.ofNullable(entityManager.getReference(Ticket.class, id));
+    }
+
+    @Override
     public Page<Ticket> findAllByUser(Long id, Role role, QueryMetadata queryMetadata) {
 
         Long count = entityManager.createQuery(QueryBuilder.buildCountQuery(role, queryMetadata),

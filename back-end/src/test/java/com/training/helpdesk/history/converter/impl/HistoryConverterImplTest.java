@@ -55,7 +55,7 @@ public class HistoryConverterImplTest {
         expected.setId(null);
 
         when(userService.findById(USER_ID)).thenReturn(USER);
-        when(ticketRepository.findById(TICKET_ID)).thenReturn(Optional.of(TICKET));
+        when(ticketRepository.getRefById(TICKET_ID)).thenReturn(Optional.of(TICKET));
 
         final HistoryDto dto = historyConverter.toDto(HISTORY);
 
