@@ -1,13 +1,13 @@
 # syntax=docker/dockerfile:1
 
-FROM ibm-semeru-runtimes:open-17-jdk AS builder
+FROM amd64/eclipse-temurin:21-jdk AS builder
 WORKDIR /app
 COPY .mvn ./.mvn
 COPY mvnw pom.xml ./
 COPY src ./src
 RUN ./mvnw package
 
-FROM ibm-semeru-runtimes:open-17-jre
+FROM amd64/eclipse-temurin:21-jre
 RUN useradd -ms /bin/bash app
 USER app
 WORKDIR /home/app

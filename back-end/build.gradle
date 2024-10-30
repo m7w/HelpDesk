@@ -6,9 +6,9 @@ plugins {
     id 'java'
     id 'eclipse'
     id 'jacoco'
-    id 'org.springframework.boot' version '3.0.4'
-    id 'org.graalvm.buildtools.native' version '0.9.19'
-    id 'org.hibernate.orm' version '6.1.7.Final'
+    id 'org.springframework.boot' version '3.3.5'
+    id 'org.graalvm.buildtools.native' version '0.10.3'
+    id 'org.hibernate.orm' version '6.6.1.Final'
 }
 
 repositories {
@@ -22,9 +22,9 @@ hibernate {
 }
 
 dependencies {
-    annotationProcessor 'org.projectlombok:lombok:1.18.24'
-    compileOnly 'org.projectlombok:lombok:1.18.24'
-    implementation platform('org.springframework.boot:spring-boot-dependencies:3.0.4')
+    annotationProcessor 'org.projectlombok:lombok:1.18.34'
+    compileOnly 'org.projectlombok:lombok:1.18.34'
+    implementation platform('org.springframework.boot:spring-boot-dependencies:3.3.5')
     implementation 'org.glassfish.jaxb:jaxb-runtime'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-cache'
@@ -33,12 +33,12 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-mail'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
-    runtimeOnly 'com.h2database:h2:2.1.214'
-    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
-    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+    implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
+    runtimeOnly 'com.h2database:h2:2.3.232'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.springframework.security:spring-security-test:6.0.1'
+    testImplementation 'org.springframework.security:spring-security-test:6.3.4'
 }
 
 group = 'com.training'
@@ -61,5 +61,5 @@ graalvmNative {
 
 tasks.named("bootJar") {
     archiveFileName = 'helpdesk.jar'
-    destinationDir = file('.')
+    destinationDirectory = file('.')
 }

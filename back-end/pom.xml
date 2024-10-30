@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.0.4</version>
+    <version>3.3.5</version>
     <relativePath />
   </parent>
   <groupId>com.training</groupId>
@@ -14,9 +16,11 @@
   <description>Help Desk</description>
   <properties>
     <java.version>17</java.version>
-    <jjwt.version>0.11.5</jjwt.version>
-    <hibernate.version>6.1.7.Final</hibernate.version>
+    <jjwt.version>0.12.6</jjwt.version>
+    <hibernate.version>6.6.1.Final</hibernate.version>
+    <lombok.version>1.18.34</lombok.version>
   </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -54,7 +58,8 @@
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
-      <optional>true</optional>
+      <version>${lombok.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>io.jsonwebtoken</groupId>
@@ -137,7 +142,7 @@
           <plugin>
             <groupId>org.graalvm.buildtools</groupId>
             <artifactId>native-maven-plugin</artifactId>
-            <!-- <version>0.9.13</version> -->
+            <version>0.10.3</version>
             <extensions>true</extensions>
             <executions>
               <execution>

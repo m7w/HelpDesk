@@ -1,7 +1,6 @@
 server:
   servlet:
     context-path: /helpdesk
-
 logging:
   file:
     name: app.log
@@ -10,7 +9,6 @@ logging:
   logback:
     rollingpolicy:
       clean-history-on-start: true
-
 spring:
   profiles:
     default: dev
@@ -36,6 +34,8 @@ spring:
   servlet:
     multipart:
       max-file-size: 5MB
+      max-request-size: 5MB
+      resolve-lazily: true
   thymeleaf:
     cache: false
     mode: HTML
@@ -57,14 +57,11 @@ spring:
           connectiontimeout: 5000
           timeout: 3000
           writetimeout: 5000
-
 jwt:
   secret: ${JWT_SECRET:AllYourBaseAreBelongToUsNoException}
   validity: 86400000
-
 app:
   frontend-endpoint: ${APP_FRONTENDENDPOINT:#{'http://localhost:4444'}}
-
 ---
 spring:
   config:
@@ -74,12 +71,10 @@ spring:
     console:
       enabled: true
       path: /h2
-  # jpa:
-  #   show-sql: false
-  #   properties:
-  #     hibernate:
-  #       format_sql: true
-  #       generate_statistics: true
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
   mail:
     properties:
       mail:

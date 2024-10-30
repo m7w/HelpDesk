@@ -1,11 +1,15 @@
 package com.training.helpdesk.config;
 
-import java.util.Collections;
+import com.training.helpdesk.security.JwtRequestFilter;
+import com.training.helpdesk.security.util.JwtUtils;
+
+import lombok.RequiredArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -19,10 +23,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
-import com.training.helpdesk.security.JwtRequestFilter;
-import com.training.helpdesk.security.util.JwtUtils;
-
-import lombok.RequiredArgsConstructor;
+import java.util.Collections;
 
 @Configuration
 @EnableWebSecurity
@@ -55,25 +56,39 @@ public class SecurityConfig {
     @Bean
     protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .cors().configurationSource((CorsConfigurationSource) request -> {
-                    CorsConfiguration config = new CorsConfiguration();
-                    config.setAllowCredentials(true);
-                    config.setAllowedOrigins(Collections.singletonList(allowedOrigin));
-                    config.setAllowedMethods(Collections.singletonList("*"));
-                    config.setAllowedHeaders(Collections.singletonList("*"));
-                    config.setExposedHeaders(Collections.singletonList("Authorization"));
-                    config.setMaxAge(3600L);
-                    return config;
-                })
-                .and()
-                .csrf().disable()
+        http.sessionManagement(
+                        session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .cors(
+                        cors ->
+                                cors.configurationSource(
+                                        (CorsConfigurationSource)
+                                                request -> {
+                                                    CorsConfiguration config =
+                                                            new CorsConfiguration();
+                                                    config.setAllowCredentials(true);
+                                                    config.setAllowedOrigins(
+                                                            Collections.singletonList(
+                                                                    allowedOrigin));
+                                                    config.setAllowedMethods(
+                                                            Collections.singletonList("*"));
+                                                    config.setAllowedHeaders(
+                                                            Collections.singletonList("*"));
+                                                    config.setExposedHeaders(
+                                                            Collections.singletonList(
+                                                                    "Authorization"));
+                                                    config.setMaxAge(3600L);
+                                                    return config;
+                                                }))
+                .csrf(csrf -> csrf.disable())
                 .addFilterBefore(jwtRequestFilter(), BasicAuthenticationFilter.class)
-                .authorizeHttpRequests(authorized -> authorized
-                        .requestMatchers("/api/auth/login").permitAll()
-                        .anyRequest().authenticated())
-                .httpBasic();
+                .authorizeHttpRequests(
+                        authorized ->
+                                authorized
+                                        .requestMatchers("/api/auth/login")
+                                        .permitAll()
+                                        .anyRequest()
+                                        .authenticated())
+                .httpBasic(Customizer.withDefaults());
 
         return http.build();
     }

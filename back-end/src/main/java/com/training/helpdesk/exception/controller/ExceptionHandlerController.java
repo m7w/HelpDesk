@@ -1,7 +1,8 @@
 package com.training.helpdesk.exception.controller;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import com.training.helpdesk.attachment.exception.UnsupportedFileTypeException;
+
+import jakarta.validation.ConstraintViolationException;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -15,9 +16,8 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import com.training.helpdesk.attachment.exception.UnsupportedFileTypeException;
-
-import jakarta.validation.ConstraintViolationException;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 @RestControllerAdvice
 public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
@@ -25,46 +25,55 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
     private static final String PATH = "path";
     private static final String STATUS = "status";
     private static final String MESSAGE = "message";
-    private static final String FILESIZE_ERROR_MESSAGE = "The size of the attached file should "
-            + "not be greater than 5 Mb. Please select antother file.";
+    private static final String FILESIZE_ERROR_MESSAGE =
+            "The size of the attached file should "
+                    + "not be greater than 5 Mb. Please select antother file.";
 
     @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException e,
-            HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(
+            MethodArgumentNotValidException e,
+            HttpHeaders headers,
+            HttpStatusCode status,
+            WebRequest request) {
 
         Map<String, Object> body = new LinkedHashMap<>();
         body.put(PATH, request.getDescription(false));
         body.put(STATUS, status);
 
-        e.getBindingResult().getAllErrors().forEach(error -> {
-            String fieldName = ((FieldError) error).getField();
-            String errorMessage = error.getDefaultMessage();
-            body.put(fieldName, errorMessage);
-        });
+        e.getBindingResult()
+                .getAllErrors()
+                .forEach(
+                        error -> {
+                            String fieldName = ((FieldError) error).getField();
+                            String errorMessage = error.getDefaultMessage();
+                            body.put(fieldName, errorMessage);
+                        });
 
         return ResponseEntity.status(status).body(body);
     }
 
     @ExceptionHandler(value = ConstraintViolationException.class)
-    public ResponseEntity<Object> handleConstraintViolation(ConstraintViolationException e,
-            WebRequest request) {
+    public ResponseEntity<Object> handleConstraintViolation(
+            ConstraintViolationException e, WebRequest request) {
 
         Map<String, Object> body = new LinkedHashMap<>();
         body.put(PATH, request.getDescription(false));
         body.put(STATUS, HttpStatus.BAD_REQUEST);
 
-        e.getConstraintViolations().forEach(violation -> {
-            String valueName = violation.getPropertyPath().toString();
-            String errorMessage = violation.getMessage();
-            body.put(valueName, errorMessage);
-        });
+        e.getConstraintViolations()
+                .forEach(
+                        violation -> {
+                            String valueName = violation.getPropertyPath().toString();
+                            String errorMessage = violation.getMessage();
+                            body.put(valueName, errorMessage);
+                        });
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
     }
 
     @ExceptionHandler(value = {IllegalArgumentException.class})
-    public ResponseEntity<Object> handleIllegalArgument(IllegalArgumentException e,
-            WebRequest request) {
+    public ResponseEntity<Object> handleIllegalArgument(
+            IllegalArgumentException e, WebRequest request) {
 
         Map<String, Object> body = new LinkedHashMap<>();
         body.put(PATH, request.getDescription(false));
@@ -74,10 +83,12 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
     }
 
-    @ExceptionHandler(value = {MaxUploadSizeExceededException.class})
-    public ResponseEntity<Object> handleExceededAttachmentSize(MaxUploadSizeExceededException e,
+    @Override
+    protected ResponseEntity<Object> handleMaxUploadSizeExceededException(
+            MaxUploadSizeExceededException ex,
+            HttpHeaders headers,
+            HttpStatusCode status,
             WebRequest request) {
-
         Map<String, Object> body = new LinkedHashMap<>();
         body.put(PATH, request.getDescription(false));
         body.put(STATUS, HttpStatus.PAYLOAD_TOO_LARGE);
@@ -87,8 +98,8 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(value = {UnsupportedFileTypeException.class})
-    public ResponseEntity<Object> handleUnsupportedFileType(UnsupportedFileTypeException e,
-            WebRequest request) {
+    public ResponseEntity<Object> handleUnsupportedFileType(
+            UnsupportedFileTypeException e, WebRequest request) {
 
         Map<String, Object> body = new LinkedHashMap<>();
         body.put(PATH, request.getDescription(false));

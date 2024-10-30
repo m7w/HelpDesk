@@ -42,12 +42,3 @@ _SPRING_MAIL_PASSWORD=your_mail_password_
 to have ability to send notification emails after user actions.  
 Run application with **docker-compose up --build**  
 All URLs are the same like in dockerless version.
-
-### Heroku
-
-You can preview running application on [Heroku](https://heroku.com).  
-Back-end URL: <https://m7w-helpdesk-backend.herokuapp.com>.  
-Front-end URL: <https://m7w-helpdesk-frontend.herokuapp.com>.  
-User credentials are the same.  
-As on the free plan containers sleeps after 30 mins of inactivity, the first time access may take some time.  
-Version for Heroku is on its own branch **deploy-to-heroku**.
