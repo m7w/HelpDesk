@@ -1,14 +1,9 @@
 package com.training.helpdesk.ticket.converter.impl;
 
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.springframework.stereotype.Component;
-
 import com.training.helpdesk.category.service.CategoryService;
 import com.training.helpdesk.ticket.converter.TicketConverter;
+import com.training.helpdesk.ticket.converter.action.ActionStrategy;
+import com.training.helpdesk.ticket.converter.action.ActionStrategyFactory;
 import com.training.helpdesk.ticket.domain.Action;
 import com.training.helpdesk.ticket.domain.Page;
 import com.training.helpdesk.ticket.domain.State;
@@ -23,6 +18,13 @@ import com.training.helpdesk.user.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -110,31 +112,7 @@ public class TicketConverterImpl implements TicketConverter {
     }
 
     private EnumSet<Action> generateActions(Long id, Role role, Ticket ticket) {
-        if (role == Role.ROLE_EMPLOYEE
-                && (ticket.getState() == State.DRAFT || ticket.getState() == State.DECLINED)) {
-            return EnumSet.of(Action.SUBMIT, Action.CANCEL);
-        }
-
-        if (role == Role.ROLE_MANAGER) {
-            if (id == ticket.getOwner().getId()
-                    && (ticket.getState() == State.DRAFT || ticket.getState() == State.DECLINED)) {
-                return EnumSet.of(Action.SUBMIT, Action.CANCEL);
-            }
-            if (ticket.getOwner().getRole() == Role.ROLE_EMPLOYEE
-                    && ticket.getState() == State.NEW) {
-                return EnumSet.of(Action.APPROVE, Action.DECLICE, Action.CANCEL);
-            }
-        }
-
-        if (role == Role.ROLE_ENGINEER) {
-            if (ticket.getState() == State.APPROVED) {
-                return EnumSet.of(Action.ASSIGN_TO_ME, Action.CANCEL);
-            }
-            if (ticket.getState() == State.IN_PROGRESS) {
-                return EnumSet.of(Action.DONE);
-            }
-        }
-
-        return EnumSet.noneOf(Action.class);
+        ActionStrategy strategy = ActionStrategyFactory.getStrategy(role);
+        return strategy.generateActions(id, ticket);
     }
 }
